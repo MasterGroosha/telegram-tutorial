@@ -14,9 +14,8 @@ def count_rows():
     """
     db = SQLighter(database_name)
     rowsnum = db.count_rows()
-    storage = shelve.open(shelve_name)
-    storage['rows_count'] = rowsnum
-    storage.close()
+    with shelve.open(shelve_name) as storage:
+        storage['rows_count'] = rowsnum
 
 
 def get_rows_count():
@@ -24,9 +23,8 @@ def get_rows_count():
     Получает из хранилища количество строк в БД
     :return: (int) Число строк
     """
-    storage = shelve.open(shelve_name)
-    rowsnum = storage['rows_count']
-    storage.close()
+    with shelve.open(shelve_name) as storage:
+        rowsnum = storage['rows_count']
     return rowsnum
 
 
@@ -36,9 +34,8 @@ def set_user_game(chat_id, estimated_answer):
     :param chat_id: id юзера
     :param estimated_answer: правильный ответ (из БД)
     """
-    storage = shelve.open(shelve_name)
-    storage[str(chat_id)] = estimated_answer
-    storage.close()
+    with shelve.open(shelve_name) as storage:
+        storage[str(chat_id)] = estimated_answer
 
 
 def finish_user_game(chat_id):
@@ -46,9 +43,8 @@ def finish_user_game(chat_id):
     Заканчиваем игру текущего пользователя и удаляем правильный ответ из хранилища
     :param chat_id: id юзера
     """
-    storage = shelve.open(shelve_name)
-    del storage[str(chat_id)]
-    storage.close()
+    with shelve.open(shelve_name) as storage:
+        del storage[str(chat_id)]
 
 
 def get_answer_for_user(chat_id):
@@ -58,13 +54,13 @@ def get_answer_for_user(chat_id):
     :param chat_id: id юзера
     :return: (str) Правильный ответ / None
     """
-    storage = shelve.open(shelve_name)
-    try:
-        answer = storage[str(chat_id)]
-        return answer
-    # Если человек не играет, ничего не возвращаем
-    except KeyError:
-        return None
+    with shelve.open(shelve_name) as storage:
+        try:
+            answer = storage[str(chat_id)]
+            return answer
+        # Если человек не играет, ничего не возвращаем
+        except KeyError:
+            return None
 
 
 def generate_markup(right_answer, wrong_answers):
