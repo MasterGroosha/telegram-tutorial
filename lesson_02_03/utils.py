@@ -3,8 +3,8 @@
 import shelve
 from telebot import types
 from random import shuffle
-from lesson_02.SQLighter import SQLighter
-from lesson_02.config import database_name, shelve_name
+from lesson_02_03.SQLighter import SQLighter
+from lesson_02_03.config import database_name, shelve_name
 
 
 def count_rows():
