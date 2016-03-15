@@ -52,7 +52,7 @@ def check_answer(message):
 def find_file_ids(message):
     for file in os.listdir('music/'):
         if file.split('.')[-1] == 'ogg':
-            f = open(file, 'rb')
+            f = open("music/"+file, 'rb')
             res = bot.send_voice(message.chat.id, f, None)
             print(res)
         time.sleep(3)
