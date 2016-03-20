@@ -33,43 +33,49 @@ def get_data():
     finally:
         timeout.cancel()
 
+        
+def send_new_posts(items, last_id):
+    for item in items:
+        if item['id'] <= last_id:
+            break
+        link = '{!s}{!s}'.format(BASE_POST_URL, item['id'])
+        bot.send_message(CHANNEL_NAME, link)
+        # Спим секунду, чтобы избежать разного рода ошибок и ограничений (на всякий случай!)
+        time.sleep(1)
+    return      
+        
 
 def check_new_posts_vk():
     # Пишем текущее время начала
     logging.info('[VK] Started scanning for new posts')
     with open(FILENAME_VK, 'rt') as file:
         last_id = int(file.read())
-        logging.info('Last ID (VK) = {!s}'.format(last_id))
+        if last_id is None:
+            logging.error('Could not read from storage. Skipped iteration.')
+            return
+        logging.info('Previous last_id is {!s}'.format(last_id))
     try:
         feed = get_data()
         # Если ранее случился таймаут, пропускаем итерацию. Если всё нормально - парсим посты.
         if feed is not None:
-            entries = feed['response']
             # 0 - это какое-то число, так что начинаем с 1
-            for i in range(1, len(entries)):
-                # Дошли до прошлого результата - останавливаемся
-                if entries[i]['id'] <= last_id:
-                    break
-                try:
-                    # Если пост был закреплен, пропускаем его
-                    tmp = entries[i]['is_pinned']
-                    continue
-                # Формируем ссылку на пост в группе и отправляем
-                except KeyError:
-                    link = '{!s}{!s}'.format(BASE_POST_URL, entries[i]['id'])
-                    bot.send_message(CHANNEL_NAME, link)
-                    # Спим одну секунду, чтобы Телеграм не отругал нас за частые обращения к серверу
-                    sleep(1)
-                    # Записываем новую "верхушку" группы, чтобы не повторяться
+            entries = feed['response'][1:]
+            try:
+                # Если пост был закреплен, пропускаем его
+                tmp = entries[0]['is_pinned']
+                send_new_posts(entries[1:], last_id)
+            except KeyError:
+                send_new_posts(entries, last_id)
+            # Записываем новую "верхушку" группы, чтобы не повторяться
             with open(FILENAME_VK, 'wt') as file:
                 try:
-                    tmp = entries[1]['is_pinned']
+                    tmp = entries[0]['is_pinned']
                     # Если первый пост - закрепленный, то сохраняем ID второго
-                    file.write(str(entries[2]['id']))
-                    logging.info('New last_id (VK) is {!s}'.format((entries[2]['id'])))
-                except KeyError:
                     file.write(str(entries[1]['id']))
                     logging.info('New last_id (VK) is {!s}'.format((entries[1]['id'])))
+                except KeyError:
+                    file.write(str(entries[0]['id']))
+                    logging.info('New last_id (VK) is {!s}'.format((entries[0]['id'])))
     except Exception as ex:
         logging.error('Exception of type {!s} in check_new_post(): {!s}'.format(type(ex).__name__, str(ex)))
         pass
