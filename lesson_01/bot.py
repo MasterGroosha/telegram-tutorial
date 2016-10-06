@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import telebot
+import config
 
-from lesson_01 import config
+bot = telebot.TeleBot(config.token)
+
+@bot.message_handler(content_types=["text"])
+def repeat_all_messages(message): # Название функции не играет никакой роли, важно не повторяться
+    bot.send_message(message.chat.id, message.text)
 
 
-def listener(messages):
-    for m in messages:
-        if m.content_type == 'text':
-            bot.send_message(m.chat.id, m.text)
-
-
-if __name__ == '__main__':
-    bot = telebot.TeleBot(config.token)
-    bot.set_update_listener(listener)
+if __name__ == "__main__":
     bot.polling(none_stop=True)
