@@ -38,7 +38,7 @@ def check_answer(message):
         bot.send_message(message.chat.id, 'Чтобы начать игру, выберите команду /game')
     else:
         # Уберем клавиатуру с вариантами ответа.
-        keyboard_hider = types.ReplyKeyboardHide()
+        keyboard_hider = types.ReplyKeyboardRemove()
         # Если ответ правильный/неправильный
         if message.text == answer:
             bot.send_message(message.chat.id, 'Верно!', reply_markup=keyboard_hider)
