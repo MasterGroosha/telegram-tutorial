@@ -29,7 +29,8 @@ def empty_query(query):
                 title="Бот \"Математика\"",
                 description=hint,
                 # Текст сообщения, которое будет выводиться при нажатии на подсказку
-                message_text="Эх, зря я не ввёл 2 числа :("
+                input_message_content=types.InputTextMessageContent(
+                message_text="Эх, зря я не ввёл 2 числа :(")
         )
         bot.answer_inline_query(query.id, [r], cache_time=86400)
     except Exception as e:
@@ -54,7 +55,8 @@ def query_text(query):
                 # Описание отображается в подсказке,
                 # message_text - то, что будет отправлено в виде сообщения
                 description="Результат: {!s}".format(m_sum),
-                message_text="{!s} + {!s} = {!s}".format(num1, num2, m_sum),
+                input_message_content=types.InputTextMessageContent(
+                message_text="{!s} + {!s} = {!s}".format(num1, num2, m_sum)),
                 # Указываем ссылку на превью и его размеры
                 thumb_url=plus_icon, thumb_width=48, thumb_height=48
         )
@@ -62,7 +64,8 @@ def query_text(query):
         r_sub = types.InlineQueryResultArticle(
                 id='2', title="Разность",
                 description="Результат: {!s}".format(m_sub),
-                message_text="{!s} - {!s} = {!s}".format(num1, num2, m_sub),
+                input_message_content=types.InputTextMessageContent(
+                message_text="{!s} - {!s} = {!s}".format(num1, num2, m_sub)),
                 thumb_url=minus_icon, thumb_width=48, thumb_height=48
         )
         # Учтем деление на ноль и подготовим 2 варианта развития событий
@@ -71,13 +74,15 @@ def query_text(query):
             r_div = types.InlineQueryResultArticle(
                     id='3', title="Частное",
                     description="Результат: {0:.2f}".format(m_div),
-                    message_text="{0!s} / {1!s} = {2:.2f}".format(num1, num2, m_div),
+                    input_message_content=types.InputTextMessageContent(
+                    message_text="{0!s} / {1!s} = {2:.2f}".format(num1, num2, m_div)),
                     thumb_url=divide_icon, thumb_width=48, thumb_height=48
             )
         else:
             r_div = types.InlineQueryResultArticle(
                     id='3', title="Частное", description="На ноль делить нельзя!",
-                    message_text="Я нехороший человек и делю на ноль!",
+                    input_message_content=types.InputTextMessageContent(
+                    message_text="Я нехороший человек и делю на ноль!"),
                     thumb_url=error_icon, thumb_width=48, thumb_height=48,
                     # Сделаем превью кликабельным, по нажатию юзера направят по ссылке
                     url="https://ru.wikipedia.org/wiki/%D0%94%D0%B5%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5_%D0%BD%D0%B0_%D0%BD%D0%BE%D0%BB%D1%8C",
@@ -89,7 +94,8 @@ def query_text(query):
         r_mul = types.InlineQueryResultArticle(
                 id='4', title="Произведение",
                 description="Результат: {!s}".format(m_mul),
-                message_text="{!s} * {!s} = {!s}".format(num1, num2, m_mul),
+                input_message_content=types.InputTextMessageContent(
+                message_text="{!s} * {!s} = {!s}".format(num1, num2, m_mul)),
                 thumb_url=multiply_icon, thumb_width=48, thumb_height=48
         )
         # В нашем случае, результаты вычислений не изменятся даже через долгие годы, НО!
