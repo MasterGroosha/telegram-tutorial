@@ -21,7 +21,7 @@ def game(message):
     # Формируем разметку
     markup = utils.generate_markup(row[2], row[3])
     # Отправляем аудиофайл с вариантами ответа
-    bot.send_voice(message.chat.id, row[1], reply_markup=markup, duration=20)
+    bot.send_audio(message.chat.id, row[1], reply_markup=markup, duration=20)
     # Включаем "игровой режим"
     utils.set_user_game(message.chat.id, row[2])
     # Отсоединяемся от БД
@@ -53,7 +53,7 @@ def find_file_ids(message):
     for file in os.listdir('music/'):
         if file.split('.')[-1] == 'ogg':
             f = open("music/"+file, 'rb')
-            res = bot.send_voice(message.chat.id, f, None)
+            res = bot.send_audio(message.chat.id, f, None)
             print(res)
         time.sleep(3)
 
