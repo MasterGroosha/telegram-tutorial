@@ -14,3 +14,5 @@
 [Урок 8: Bot API v2: Кнопки и редактирование сообщений](https://groosha.gitbooks.io/telegram-bot-lessons/content/chapter8.html)  
 [Урок 9: Bot API v2: Специальные кнопки, опять редактирование сообщений, кэшированный инлайн](https://groosha.gitbooks.io/telegram-bot-lessons/content/chapter9.html)  
 [Урок 10: Bot API v3: Автоматизируем работу в группах.](https://groosha.gitbooks.io/telegram-bot-lessons/content/chapter10.html)  
+[Урок 11: Ведём (более-менее) осмысленные диалоги. Конечные автоматы.](https://groosha.gitbooks.io/telegram-bot-lessons/content/chapter11.html)  
+
