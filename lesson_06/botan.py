@@ -18,7 +18,7 @@ def make_json(message):
     data['chat'] = {}
     # Chat.Id используется в обоих типах чатов
     data['chat']['id'] = message.chat.id
-    return data
+    return json.dumps(data)
 
 
 def track(token, uid, message, name='Message'):
