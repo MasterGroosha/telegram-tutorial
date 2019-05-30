@@ -1,7 +1,7 @@
 ### Уроки по написанию простого бота для Telegram
 
 В данном репозитории хранятся исходные коды для уроков по написанию простого бота для Telegram.  
-Сами уроки можно прочесть [вот тут](https://groosha.gitbook.io/telegram-bot-lessons).
+Сами уроки можно прочесть [вот тут](https://groosha.gitbook.io/telegram-bot-lessons). А обсудить – в [Telegram-чатике](https://t.me/joinchat/ABtnIE7H7Q3TRRh8n8uNww)
 
 [Урок 1: Введение, простой бот](https://groosha.gitbook.io/telegram-bot-lessons/chapter1)  
 [Урок 1,5: Работа с библиотекой pyTelegramBotAPI](https://groosha.gitbook.io/telegram-bot-lessons/extra/pytelegrambotapi_basics)  
