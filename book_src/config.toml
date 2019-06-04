@@ -1,0 +1,11 @@
+baseURL = "https://mastergroosha.github.io/telegram-tutorial/"
+languageCode = "ru-RU"
+title = "Пишем ботов для Telegram на языке Python"
+publishDir = "../docs"
+theme = 'book'
+enableEmoji = true
+PygmentsCodeFences = true
+PygmentsStyle = "bw"
+
+[params]
+    BookMenuBundle = '/menu'

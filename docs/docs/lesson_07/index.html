@@ -1,0 +1,181 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Урок 7. Встраиваемые боты (Inline)
+| Пишем ботов для Telegram на языке Python</title><link rel=stylesheet href=/test-web/css/override.css><link rel=stylesheet href=/telegram-tutorial/book.min.b7d5ee4f671b06dde5fd61ab409a54048ba7759e99fed39ac32a7be45d4d92cd.css><link rel=icon href=/telegram-tutorial/favicon.png type=image/x-icon></head><body><input type=checkbox style=display:none id=menu-control><main class="flex container"><aside class="book-menu fixed"><nav><h2 class=book-brand><a href=https://mastergroosha.github.io/telegram-tutorial/>Пишем ботов для Telegram на языке Python</a></h2><style>nav ul a[href$=\2ftelegram-tutorial\2f docs\2flesson_07\2f ]{color:#004ed0}</style><ul><li><a href=/telegram-tutorial/docs/lesson_01/>Урок 1. Введение, простой echo-бот</a></li><li><a href=/telegram-tutorial/docs/lesson_02/>Урок 2. “Угадай мелодию”. Подготовка</a></li><li><a href=/telegram-tutorial/docs/lesson_03/>Урок 3. “Угадай мелодию”. Завершаем бота</a></li><li><a href=/telegram-tutorial/docs/lesson_04/>Урок 4. Вебхуки</a></li><li><a href=/telegram-tutorial/docs/lesson_05/>Урок 5. Автопостинг в каналы</a></li><li><a href=/telegram-tutorial/docs/lesson_06/>Урок 6. Собираем аналитику при помощи Botan</a></li><li><a href=/telegram-tutorial/docs/lesson_07/>Урок 7. Встраиваемые боты (Inline)</a></li><li><a href=/telegram-tutorial/docs/lesson_08/>Урок 8. Bot API v2: Кнопки и редактирование сообщений</a></li><li><a href=/telegram-tutorial/docs/lesson_09/>Урок 9. Bot API v2: Специальные кнопки, опять редактирование сообщений, кэшированный инлайн</a></li><li><a href=/telegram-tutorial/docs/lesson_10/>Урок 10. Bot API v3. Автоматизируем работу в группах</a></li><li><a href=/telegram-tutorial/docs/lesson_11/>Урок 11. Ведём (более-менее) осмысленные диалоги. Конечные автоматы</a></li><li><a href=/telegram-tutorial/docs/lesson_12/>Урок 12. Запускаем несколько ботов на одном сервере</a></li></ul></nav></aside><div class=book-page><header class="align-center justify-between book-header"><label for=menu-control><img src=/telegram-tutorial/svg/menu.svg alt=Menu></label>
+<strong>Урок 7. Встраиваемые боты (Inline)</strong></header><header class=markdown><h1>Урок 7. Встраиваемые боты (Inline)</h1></header><article class=markdown><p>⁠<div class=book-expand><label><div class="book-expand-head flex justify-between"><span>⚠️ Важно!</span>
+<span>↕</span></div><input type=checkbox style=display:none><div class="book-expand-content markdown-inner">Код, приведённый здесь, актуален для первой версии Bot API. Пожалуйста, откройте <a href=/telegram-tutorial/docs/lesson_08/>урок 8</a>, чтобы узнать о важных изменениях.</div></label></div></p><h2 id=введение>Введение</h2><p>4 января 2016 года разработчики Telegram выпустили большое дополнение к существующему BotAPI, заключающееся в появлении <a href=https://telegram.org/blog/inline-bots>встраиваемых ботов</a>.<br>К сожалению, не все до конца понимают, в чем их особенность. А вот в чем: если раньше для того, чтобы получить какую-либо информацию от бота и перекинуть её собеседнику нужно было открывать диалог с ботом, писать всякие команды, а потом пересылать ответ в нужный чат, то теперь всё стало быстрее и проще (для некоторых ситуаций): просто открываете нужный чат, вызываете бота, введя его ник в поле ввода сообщения, ставите пробел и пишете свой запрос. Бот отвечает на эти запросы в виде всплывающих подсказок, число и содержание которых зависит от того, что вы написали боту и от заложенного в него алгоритма. Если одна из подсказок удовлетворяет вашему запросу, нажимаете на неё и некоторое сообщение отправляется в тот чат, в котором вы находитесь.<br>Например, если вы хотите отправить своему собеседнику ссылку на статью о Telegram из русскоязычной Википедии, то достаточно ввести в поле ввода @wiki ru Telegram и подождать пару секунд. Результат представлен на рисунке:</p><p><center><figure style="padding:.25rem;margin:1rem 0"><img style=max-width:100%;height:auto src=/test-web/images/l7_1.jpg alt="Рис. 1. Как выглядят результаты запросов от встраиваемых ботов"><figcaption><h4><i>Рис. 1. Как выглядят результаты запросов от встраиваемых ботов</i></h4></figcaption></figure></center></p><p>Соответственно, если вы нажмете на одну из этих подсказок, то ссылка на соответствующую статью будет отправлена в текущий чат. Собственно, всё!<br>Помимо ссылок, при помощи Inline API можно отправлять фотографии, GIF-анимации, видеоанимации в формате Mpeg-4 и ссылки на видеозаписи, которые можно будет смотреть прямо в приложении.</p><p>Прежде, чем мы начнём писать своего встраиваемого бота, несколько слов о том, для чего <strong>НЕ</strong> надо их использовать и какие есть ограничения. Во-первых, такие боты нужны именно для подсказок, когда вы хотите чем-то поделиться, но вам нужна помощь бота. Вы же не помните все ссылки на те самые видео с котиками? А бот быстренько поможет его найти, чтобы вы поделились им в чатике. Во-вторых, существуют недокументированные ограничения по объемам отправляемой информации. Скажем, для текстов и ссылок нельзя отправлять элементы длиннее 300-400 символов (на самом деле, получается без проблем около двухсот, больше - с оговорками). На мой взгляд, это самый неприятный момент в API. Я давеча пытался прикрутить поиск цитат с сайта <a href=https://bash.im>Bash.im</a> из своей базы для одного из моих <a href=https://t.me/bashim_bot>ботов</a>. Увы, всё, чего удалось добиться, это отправка коротких цитат (примерно с твит размером) непосредственно текстом, длинных - через отправку ссылок на сам Баш.</p><h2 id=простой-инлайн-бот>Простой инлайн-бот</h2><p>Ну а теперь приступим к созданию нашего первого встраиваемого бота. Вообще говоря, никто не мешает добавить существующему Inline-возможности, но дабы не усложнять код, напишем отдельного.<br>Что же он будет уметь? Пусть на вход боту будут подаваться 2 числа, а он в подсказках будет предлагать основные математические действия: сложение, вычитание, умножение и деление. Да, пример надуманный, но как нельзя лучше показывает особенности Inline API.
+В начале, зарегистрируем бота у <a href=https://t.me/botfather>@BotFather</a> (или воспользуемся имеющимся) для него вызовем команду /setinline.<br><strong>Внимание</strong>: после ввода этой команды и выбора бота нужно ввести подсказку, появляющуюся в поле ввода при вызове нашего бота в дальнейшем, иначе фокус не удастся.</p><p>Создадим файл исходного кода и добавим туда необходимые импорты и объект самого бота:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none># -*- coding: utf-8 -*-
+
+import telebot
+import re
+from telebot import types
+
+token = &#39;ваш_токен&#39;
+bot = telebot.TeleBot(token)</code></pre></div><p>Мы условились, что на вход будут подаваться 2 числа, поэтому нам нужно построить регулярное выражение, которое будет реагировать на корректный ввод. Оно очень простое:<br><code>digits_pattern = re.compile(r'^[0-9]+ [0-9]+$', re.MULTILINE)</code></p><p>А теперь самое главное - логика. Пока юзер пишет, Телеграм никак себя не проявляет, но как только он делает паузу, приложение считает, что это законченный ввод и отправляет его боту. Юзер дописал ещё пару символов и остановился? Окей, снова кидаем это боту. Соответственно, может сложиться ситуация, когда пользователь ввёл одно число и задумался. Наш парсер, попробовав сопоставить текст на наличие регулярного выражение, ругнётся и сотворит всякие нехорошие вещи, например, остановит весь скрипт (мы же помним, что Python - интерпретируемый язык, да?). Значит, надо ставить ловлю исключений:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none>try:
+    matches = re.match(digits_pattern, query.query)
+except AttributeError as ex:
+    return</code></pre></div><p>Если условие выше отработало без ошибок, значит, мы получили два искомых числа. Теперь начинаются особенности Inline API. Каждая подсказка, присылаемая ботом, это объект с набором некоторых характеристик. Мы будем использовать объект типа &ldquo;Статья&rdquo;.
+Согласно <a href=https://core.telegram.org/bots/api#inline-mode>документации</a>, обязательных параметров у такого объекта четыре: тип, уникальный идентификатор, заголовок и объект, который будет отправлен, чаще всего текст. По поводу типа можно не беспокоиться: используемая мной уже больше полугода библиотека <a href=https://github.com/eternnoir/pyTelegramBotAPI>pyTelegramBotAPI</a> подставит нужное значение сама. Уникальный идентификатор придется ставить самим и тут есть подвох: при использовании подгрузки (об этом в конце урока) идентификаторы должны быть уникальными у всех значений в одном большом запросе (т.е. у исходных результатов и всех подгружаемых в пределах одного запроса). Учтите это. Заголовок - очевидно. Отправляемый текст - то, что будет отправлено в текущий чат при нажатии на данную подсказку.<br>Есть ещё необязательный параметр &ldquo;описание&rdquo; (description). Так вот, описание != отправляемый текст. В подсказке может быть написано &ldquo;Наполеон - это торт&rdquo;, а в отправляемом тексте могут содержаться коды запуска ядерный ракет. Шутка, но смысл понятен.</p><p>Вооружившись этими знаниями и имея на руках два присланных пользователем числа, давайте создадим 4 объекта, каждый из которых отвечает за свою математическую операцию (на самом деле 5, т.к. учтем деление на ноль):</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none>num1, num2 = matches.group().split()
+try:
+    m_sum = int(num1) + int(num2)
+    r_sum = types.InlineQueryResultArticle(
+            id=&#39;1&#39;, title=&#34;Сумма&#34;,
+            # Описание отображается в подсказке,
+            # message_text - то, что будет отправлено в виде сообщения
+            description=&#34;Результат: {!s}&#34;.format(m_sum),
+            input_message_content=types.InputTextMessageContent(
+            message_text=&#34;{!s} + {!s} = {!s}&#34;.format(num1, num2, m_sum))
+    )
+    m_sub = int(num1) - int(num2)
+    r_sub = types.InlineQueryResultArticle(
+            id=&#39;2&#39;, title=&#34;Разность&#34;,
+            description=&#34;Результат: {!s}&#34;.format(m_sub),
+            input_message_content=types.InputTextMessageContent(
+            message_text=&#34;{!s} - {!s} = {!s}&#34;.format(num1, num2, m_sub))
+    )
+    # Учтем деление на ноль и подготовим 2 варианта развития событий
+    if num2 is not &#34;0&#34;:
+        m_div = int(num1) / int(num2)
+        r_div = types.InlineQueryResultArticle(
+                id=&#39;3&#39;, title=&#34;Частное&#34;,
+                description=&#34;Результат: {0:.2f}&#34;.format(m_div),
+                input_message_content=types.InputTextMessageContent(
+                message_text=&#34;{0!s} / {1!s} = {2:.2f}&#34;.format(num1, num2, m_div))
+        )
+    else:
+        r_div = types.InlineQueryResultArticle(
+                id=&#39;3&#39;, title=&#34;Частное&#34;, description=&#34;На ноль делить нельзя!&#34;,
+                input_message_content=types.InputTextMessageContent(
+                message_text=&#34;Я нехороший человек и делю на ноль!&#34;)
+        )
+    m_mul = int(num1) * int(num2)
+    r_mul = types.InlineQueryResultArticle(
+            id=&#39;4&#39;, title=&#34;Произведение&#34;,
+            description=&#34;Результат: {!s}&#34;.format(m_mul),
+            input_message_content=types.InputTextMessageContent(
+            message_text=&#34;{!s} * {!s} = {!s}&#34;.format(num1, num2, m_mul))
+    )
+    bot.answer_inline_query(query.id, [r_sum, r_sub, r_div, r_mul])
+except Exception as e:
+    print(&#34;{!s}\n{!s}&#34;.format(type(e), str(e)))</code></pre></div><p>Полагаю, тут ничего сверхсложного нет. Вызывает интерес только последняя строка, а именно метод <code>answer_inline_query</code>. У него обязательных параметров два: уникальный идентификатор запроса (его получает хэндлер, так что про него забываем) и массив ответов. Загоняем теперь предыдущие два куска кода в одну функцию, обернутую хэндлером:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none>@bot.inline_handler(func=lambda query: len(query.query) &gt; 0)
+def query_text(query):
+    (тут два куска кода, приведённых выше)</code></pre></div><p>И можно запускать! Введём в любом чате, кроме секретного, ник нашего бота и два числа. Смотрим на подсказку:</p><p><center><figure style="padding:.25rem;margin:1rem 0"><img style=max-width:100%;height:auto src=/test-web/images/l7_2.jpg alt="Рис. 2. Результат работы бота"><figcaption><h4><i>Рис. 2. Результат работы бота</i></h4></figcaption></figure></center></p><h2 id=дизайн-и-подсказки>Дизайн и подсказки</h2><p>В принципе, правильно, но как-то не наглядно. Да и не очень понятно для нового пользователя, как, что и зачем.<br>А давайте учтем ситуацию, когда пользователь ввёл только ник бота, и покажем ему подсказку:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none>@bot.inline_handler(func=lambda query: len(query.query) is 0)
+def empty_query(query):
+    hint = &#34;Введите ровно 2 числа и получите результат!&#34;
+    try:
+        r = types.InlineQueryResultArticle(
+                id=&#39;1&#39;,
+                parse_mode=&#39;Markdown&#39;,
+                title=&#34;Бот \&#34;Математика\&#34;&#34;,
+                description=hint,
+                input_message_content=types.InputTextMessageContent(
+                message_text=&#34;Эх, зря я не ввёл 2 числа :(&#34;)
+        )
+        bot.answer_inline_query(query.id, [r])
+    except Exception as e:
+        print(e)</code></pre></div><p>Уже лучше, но всё равно не очень наглядно. А давайте добавим превью для каждой подсказки, чтобы слева была иконка соответствующей операции, и, заодно, сделаем превью при делении на ноль кликабельным, отправляя пользователя на <a href=https://ru.wikipedia.org/wiki/Деление_на_ноль>эту страницу Википедии</a>.<br>Во-первых, закачаем на какой-нибудь бесплатный хостинг иконки с нашими математическими операциями (сгенерировал в <a href=https://www.syncfusion.com/downloads/metrostudio>Metro Studio</a>, размер каждой 48х48 px):</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none>plus_icon = &#34;https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg&#34;
+minus_icon = &#34;https://pp.vk.me/c627626/v627626512/2a635/ILYe7N2n8Zo.jpg&#34;
+divide_icon = &#34;https://pp.vk.me/c627626/v627626512/2a620/oAvUk7Awps0.jpg&#34;
+multiply_icon = &#34;https://pp.vk.me/c627626/v627626512/2a62e/xqnPMigaP5c.jpg&#34;
+error_icon = &#34;https://pp.vk.me/c627626/v627626512/2a67a/ZvTeGq6Mf88.jpg&#34;</code></pre></div><p>Во-вторых, отредактируем функцию <code>query_text</code>, добавив к каждому объекту типа &ldquo;Статья&rdquo; иконку, а для деления на ноль - свою иконку и ссылку:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none>@bot.inline_handler(func=lambda query: len(query.query) &gt; 0)
+def query_text(query):
+    try:
+        matches = re.match(digits_pattern, query.query)
+    # Вылавливаем ошибку, если вдруг юзер ввёл чушь
+    # или задумался после ввода первого числа
+    except AttributeError as ex:
+        return
+    # В этом месте мы уже уверены, что всё хорошо,
+    # поэтому достаем числа
+    num1, num2 = matches.group().split()
+    try:
+        m_sum = int(num1) + int(num2)
+        r_sum = types.InlineQueryResultArticle(
+                id=&#39;1&#39;, title=&#34;Сумма&#34;,
+                # Описание отображается в подсказке,
+                # message_text - то, что будет отправлено в виде сообщения
+                description=&#34;Результат: {!s}&#34;.format(m_sum),
+                input_message_content=types.InputTextMessageContent(
+                message_text=&#34;{!s} + {!s} = {!s}&#34;.format(num1, num2, m_sum)),
+                # Указываем ссылку на превью и его размеры
+                thumb_url=plus_icon, thumb_width=48, thumb_height=48
+        )
+        m_sub = int(num1) - int(num2)
+        r_sub = types.InlineQueryResultArticle(
+                id=&#39;2&#39;, title=&#34;Разность&#34;,
+                description=&#34;Результат: {!s}&#34;.format(m_sub),
+                input_message_content=types.InputTextMessageContent(
+                message_text=&#34;{!s} - {!s} = {!s}&#34;.format(num1, num2, m_sub)),
+                thumb_url=minus_icon, thumb_width=48, thumb_height=48
+        )
+        # Учтем деление на ноль и подготовим 2 варианта развития событий
+        if num2 is not &#34;0&#34;:
+            m_div = int(num1) / int(num2)
+            r_div = types.InlineQueryResultArticle(
+                    id=&#39;3&#39;, title=&#34;Частное&#34;,
+                    description=&#34;Результат: {0:.2f}&#34;.format(m_div),
+                    input_message_content=types.InputTextMessageContent(
+                    message_text=&#34;{0!s} / {1!s} = {2:.2f}&#34;.format(num1, num2, m_div)),
+                    thumb_url=divide_icon, thumb_width=48, thumb_height=48
+            )
+        else:
+            r_div = types.InlineQueryResultArticle(
+                    id=&#39;3&#39;, title=&#34;Частное&#34;, description=&#34;На ноль делить нельзя!&#34;,
+                    input_message_content=types.InputTextMessageContent(
+                    message_text=&#34;Я нехороший человек и делю на ноль!&#34;),
+                    thumb_url=error_icon, thumb_width=48, thumb_height=48,
+                    # Сделаем превью кликабельным, по нажатию юзера направят по ссылке
+                    url=&#34;https://ru.wikipedia.org/wiki/%D0%94%D0%B5%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5_%D0%BD%D0%B0_%D0%BD%D0%BE%D0%BB%D1%8C&#34;,
+                    disable_web_page_preview=True,
+                    # Не будем показывать URL в подсказке
+                    hide_url=True
+            )
+        m_mul = int(num1) * int(num2)
+        r_mul = types.InlineQueryResultArticle(
+                id=&#39;4&#39;, title=&#34;Произведение&#34;,
+                description=&#34;Результат: {!s}&#34;.format(m_mul),
+                input_message_content=types.InputTextMessageContent(
+                message_text=&#34;{!s} * {!s} = {!s}&#34;.format(num1, num2, m_mul)),
+                thumb_url=multiply_icon, thumb_width=48, thumb_height=48
+        )
+        # В нашем случае, результаты вычислений не изменятся даже через долгие годы, НО!
+        # если где-то допущена ошибка и cache_time уже выставлен большим, то это уже никак не исправить (наверное)
+        # Для справки: 2147483646 секунд - это 68 с копейками лет :)
+        bot.answer_inline_query(query.id, [r_sum, r_sub, r_div, r_mul], cache_time=2147483646)
+    except Exception as e:
+        print(&#34;{!s}\n{!s}&#34;.format(type(e), str(e)))</code></pre></div><p>Обратите снова внимание на функцию <code>answer_inline_query</code>, в ней я добавил аргумент <code>cache_time</code>. Значит он именно то, что первым приходит в голову — устанавливает время, на которое результат будет закэширован, чтобы лишний раз не дергать бота. Сейчас на моей стороне тот факт, что математика - фундаментальная наука, и за те 68 с копейками лет, что указаны у меня в аргументе <code>cache_time</code>, результат операций не изменится. Но! Выше на рис. 2 у меня слева от подсказок нет ничего, никаких картинок. И да, в течение 68 с лишним лет конкретно для данного запроса так и будет. Поэтому трижды подумайте, прежде чем установите большое время кэширования. Для каких-то динамических результатов, например, для подсказки при нулевом запросе, вполне достаточно времени 86400 (1 сутки). По умолчанию, кстати, вообще всего 300 секунд, т.е. 5 минут.</p><p>Теперь наши результаты выглядят куда симпатичнее:</p><p><center><figure style="padding:.25rem;margin:1rem 0"><img style=max-width:100%;height:auto src=/test-web/images/l7_3.jpg alt><figcaption><h4><i></i></h4></figcaption></figure></center><center><figure style="padding:.25rem;margin:1rem 0"><img style=max-width:100%;height:auto src=/test-web/images/l7_4.jpg alt><figcaption><h4><i></i></h4></figcaption></figure></center></p><p>Прекрасно! Мы написали своего первого встраиваемого бота! Но&hellip;
+Но есть ещё такая штука, как <code>offset</code>. Вообще говоря, это нужно для постепенной подгрузки новых результатов. Например, пользователь запрашивает видео с котиками, бот возвращает пять штук. Как только юзер долистывает до конца, бот запрашивает у своего источника ещё пять, а Telegram дописывает их к уже имеющимся. В итоге, уже 10 вариантов и так далее. В одном из своих ботов я сделал так: запрашиваю из БД 5 записей с <code>offset</code> равным нулю. При отправке их пользователю, я устанавливаю в функции <code>answer_inline_query</code> параметр <code>next_offset</code> в значение 5 (строковый параметр, если что). Если юзер долистал до конца, то боту придет запрос с этим же текстом, но с значением <code>offset</code> как раз 5, поэтому в следующий раз я из БД запрошу уже следующие пять записей, прибавлю ещё пятерку к текущему значению, получая 10 и снова верну пользователю значения. Как только у меня закончились соответствующие запросу данные в базе, отправляю пустую строку в качестве аргумента <code>next_offset</code>. В общем, всё выглядит примерно так (бОльшая часть кода вырезана для упрощения понимания):</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none>def query_text(query):
+    offset = int(query.offset) if query.offset else 0
+    with sqlite3.connect(&#39;quotes.db&#39;) as connection:
+        cursor = connection.cursor()
+        # Тут используется SQLite Full-Text Search, не пугайтесь
+        quotes = cursor.execute(&#34;SELECT num, text FROM quotes WHERE quotes.id IN (SELECT rowid FROM fts WHERE text MATCH ?) LIMIT 5 OFFSET ?&#34;, (query.query, offset,)).fetchall()
+    if len(quotes) is 0:
+        try:
+            result = types.InlineQueryResultArticle(id=&#39;1&#39;,
+                                           title=(заголовок),
+                                           description=(описание),
+                                           input_message_content=types.InputTextMessageContent(
+                                           message_text=&#34;(текст)&#34;))
+            bot.answer_inline_query(query.id, [result])
+        except Exception as e:
+            print(e)
+        return
+    results_array = []
+    try:
+        m_next_offset = str(offset + 5) if len(quotes) == 5 else None
+        for index, quote in enumerate(quotes):
+            try:
+                # При использовании подгрузки, ID должны быть уникальными в пределах всей большой пачки!
+                results_array.append(types.InlineQueryResultArticle(id=str(offset + index),
+                                           title=(заголовок),
+                                           description=(описание),
+                                           input_message_content=types.InputTextMessageContent(
+                                           message_text=(текст)),
+                                           )
+                                    )
+            except Exception as e:
+                print(e)
+        # устанавливаем новый offset или сбрасываем, если в БД закончились релевантные записи
+        bot.answer_inline_query(query.id, results_array, next_offset=m_next_offset if m_next_offset else &#34;&#34;)
+    except Exception as e:
+        print(e)</code></pre></div><p>На этом урок действительно закончен.</p><p><a href=/telegram-tutorial/docs/lesson_06/ class=book-btn style=float:left>← Урок №6</a>
+<a href=/telegram-tutorial/docs/lesson_08/ class=book-btn style=float:right>Урок №8 →</a></p></article></div><aside class="book-toc level-3 fixed"><nav id=TableOfContents><ul><li><ul><li><a href=#введение>Введение</a></li><li><a href=#простой-инлайн-бот>Простой инлайн-бот</a></li><li><a href=#дизайн-и-подсказки>Дизайн и подсказки</a></li></ul></li></ul></nav></aside></main></body></html>

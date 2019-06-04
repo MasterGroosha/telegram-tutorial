@@ -1,0 +1,96 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Урок 11. Ведём (более-менее) осмысленные диалоги. Конечные автоматы
+| Пишем ботов для Telegram на языке Python</title><link rel=stylesheet href=/test-web/css/override.css><link rel=stylesheet href=/telegram-tutorial/book.min.b7d5ee4f671b06dde5fd61ab409a54048ba7759e99fed39ac32a7be45d4d92cd.css><link rel=icon href=/telegram-tutorial/favicon.png type=image/x-icon></head><body><input type=checkbox style=display:none id=menu-control><main class="flex container"><aside class="book-menu fixed"><nav><h2 class=book-brand><a href=https://mastergroosha.github.io/telegram-tutorial/>Пишем ботов для Telegram на языке Python</a></h2><style>nav ul a[href$=\2ftelegram-tutorial\2f docs\2flesson_11\2f ]{color:#004ed0}</style><ul><li><a href=/telegram-tutorial/docs/lesson_01/>Урок 1. Введение, простой echo-бот</a></li><li><a href=/telegram-tutorial/docs/lesson_02/>Урок 2. “Угадай мелодию”. Подготовка</a></li><li><a href=/telegram-tutorial/docs/lesson_03/>Урок 3. “Угадай мелодию”. Завершаем бота</a></li><li><a href=/telegram-tutorial/docs/lesson_04/>Урок 4. Вебхуки</a></li><li><a href=/telegram-tutorial/docs/lesson_05/>Урок 5. Автопостинг в каналы</a></li><li><a href=/telegram-tutorial/docs/lesson_06/>Урок 6. Собираем аналитику при помощи Botan</a></li><li><a href=/telegram-tutorial/docs/lesson_07/>Урок 7. Встраиваемые боты (Inline)</a></li><li><a href=/telegram-tutorial/docs/lesson_08/>Урок 8. Bot API v2: Кнопки и редактирование сообщений</a></li><li><a href=/telegram-tutorial/docs/lesson_09/>Урок 9. Bot API v2: Специальные кнопки, опять редактирование сообщений, кэшированный инлайн</a></li><li><a href=/telegram-tutorial/docs/lesson_10/>Урок 10. Bot API v3. Автоматизируем работу в группах</a></li><li><a href=/telegram-tutorial/docs/lesson_11/>Урок 11. Ведём (более-менее) осмысленные диалоги. Конечные автоматы</a></li><li><a href=/telegram-tutorial/docs/lesson_12/>Урок 12. Запускаем несколько ботов на одном сервере</a></li></ul></nav></aside><div class=book-page><header class="align-center justify-between book-header"><label for=menu-control><img src=/telegram-tutorial/svg/menu.svg alt=Menu></label>
+<strong>Урок 11. Ведём (более-менее) осмысленные диалоги. Конечные автоматы</strong></header><header class=markdown><h1>Урок 11. Ведём (более-менее) осмысленные диалоги. Конечные автоматы</h1></header><article class=markdown><h2 id=общая-часть>Общая часть</h2><p>Полезных ботов мы уже умеем делать (если вам вдруг так не кажется, перечитайте первые уроки), теперь пора делать, кхм, «смышлённых».</p><p>Но для начала – немного теории. Будем считать, что диалог пользователя с ботом можно разбить на логические части: начало диалога, запрос одной информации, запрос другой информации, возврат к определенному этапу диалога, конец диалога. При этом можно сказать, что при каждом сообщении пользователя, его состояние (или состояние бота, с какой стороны посмотреть) меняется, и между этими состояниями осуществляются переходы. Под «состоянием» будем понимать следующее ожидаемое от пользователя действие.<br>Наш бот должен иметь возможность определять текущее состояние пользователя, подбирать соответствующие сообщения, а также дожидаться нужного ответа. Поставим задачу следующим образом: бот запрашивает у пользователя имя, возраст и просит отправить картинку. Не допускается некорректный ввод возраста и пропуск какого-либо шага. По команде /reset диалог начинается заново. Состояние пользователя не должно потеряться при перезагрузке бота.<br>На следующем рисунке изображены возможные состояния бота и переходы между ними.</p><p><center><figure style="padding:.25rem;margin:1rem 0"><img style=max-width:100%;height:auto src=/test-web/images/l11_1.png alt="Переход между состояниями"><figcaption><h4><i>Переход между состояниями</i></h4></figcaption></figure></center></p><p>Бот должен помнить все сохранённые состояния даже после перезагрузки, поэтому нам потребуется отдельное хранилище во внешней памяти (например, на жёстком диске). Будем использовать однофайловую БД <a href=https://vedis-python.readthedocs.io/en/latest/>Vedis</a>, позволяющую удобно хранить пары «ключ-значение». В качестве ключа возьмём ID пользователя, конвертированный в строку, а в качестве значения - его «состояние».</p><h2 id=пишем-бота>Пишем бота</h2><p>С базы и начнём. Создадим пустой файл <code>bot.py</code> и рядом с ним <code>dbworker.py</code>, в котором опишем два метода для работы с БД: получение текущего состояния и смена состояния на желаемое.</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none># -*- coding: utf-8 -*-
+
+from vedis import Vedis
+import config
+
+# Пытаемся узнать из базы «состояние» пользователя
+def get_current_state(user_id):
+    with Vedis(config.db_file) as db:
+        try:
+            return db[user_id].decode() # Если используете Vedis версии ниже, чем 0.7.1, то .decode() НЕ НУЖЕН
+        except KeyError:  # Если такого ключа почему-то не оказалось
+            return config.States.S_START.value  # значение по умолчанию - начало диалога
+
+# Сохраняем текущее «состояние» пользователя в нашу базу
+def set_state(user_id, value):
+    with Vedis(config.db_file) as db:
+        try:
+            db[user_id] = value
+            return True
+        except:
+            # тут желательно как-то обработать ситуацию
+            return False</code></pre></div><p>Как видно из кода выше, не хватает ещё файла <code>config.py</code>. Создадим этот файл, в нём укажем токен бота, название базы данных (с расширением <code>.vdb</code>) и зададим класс со списком возможных состояний пользователя:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none># -*- coding: utf-8 -*-
+
+from enum import Enum
+
+token = &#34;1234567:ABCxyz&#34;
+db_file = &#34;database.vdb&#34;
+
+
+class States(Enum):
+    &#34;&#34;&#34;
+    Мы используем БД Vedis, в которой хранимые значения всегда строки,
+    поэтому и тут будем использовать тоже строки (str)
+    &#34;&#34;&#34;
+    S_START = &#34;0&#34;  # Начало нового диалога
+    S_ENTER_NAME = &#34;1&#34;
+    S_ENTER_AGE = &#34;2&#34;
+    S_SEND_PIC = &#34;3&#34;</code></pre></div><p>Настало время перейти к описанию логики бота. По команде <strong>/start</strong> будем инициировать начало диалога и спрашивать у юзера его имя, затем переключать «состояние» на «ожидаем ввода имени». По команде <strong>/reset</strong> будем возвращаться в начало диалога, спрашивать имя и т.д., копируя код из обработчика <strong>/start</strong>. Различия появятся позже.</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none># -*- coding: utf-8 -*-
+
+import telebot
+import config
+import dbworker
+
+bot = telebot.TeleBot(config.token)
+
+# Начало диалога
+@bot.message_handler(commands=[&#34;start&#34;])
+def cmd_start(message):
+    bot.send_message(message.chat.id, &#34;Привет! Как я могу к тебе обращаться?&#34;)
+    dbworker.set_state(message.chat.id, config.States.S_ENTER_NAME.value)
+
+# По команде /reset будем сбрасывать состояния, возвращаясь к началу диалога
+@bot.message_handler(commands=[&#34;reset&#34;])
+def cmd_reset(message):
+    bot.send_message(message.chat.id, &#34;Что ж, начнём по-новой. Как тебя зовут?&#34;)
+    dbworker.set_state(message.chat.id, config.States.S_ENTER_NAME.value)</code></pre></div><p>Теперь нам нужен хэндлер, который сработает только при определённом состоянии пользователя. Отлично, прямо так и сделаем:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none>@bot.message_handler(func=lambda message: dbworker.get_current_state(message.chat.id) == config.States.S_ENTER_NAME.value)
+def user_entering_name(message):
+    # В случае с именем не будем ничего проверять, пусть хоть &#34;25671&#34;, хоть Евкакий
+    bot.send_message(message.chat.id, &#34;Отличное имя, запомню! Теперь укажи, пожалуйста, свой возраст.&#34;)
+    dbworker.set_state(message.chat.id, config.States.S_ENTER_AGE.value)</code></pre></div><p>Обратите внимание: мы сравниваем текущее состояние пользователя со значением состояния, необходимым для входа в функцию. Если у пользователя в данный момент другое состояние, то подхэндлерный метод просто не вызовется. Соответственно, если у вас два хэндлера, реагирующих на одно и то же состояние, сработает первый по списку.</p><p>Следующая функция должна принять от пользователя его возраст. Если в первом случае нам было всё равно, то теперь придётся заняться проверкой вводимых значений, причём делать надо именно на втором шаге, а не на первом.</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none>@bot.message_handler(func=lambda message: dbworker.get_current_state(message.chat.id) == config.States.S_ENTER_AGE.value)
+def user_entering_age(message):
+    # А вот тут сделаем проверку
+    if not message.text.isdigit():
+        # Состояние не меняем, поэтому только выводим сообщение об ошибке и ждём дальше
+        bot.send_message(message.chat.id, &#34;Что-то не так, попробуй ещё раз!&#34;)
+        return
+    # На данном этапе мы уверены, что message.text можно преобразовать в число, поэтому ничем не рискуем
+    if int(message.text) &lt; 5 or int(message.text) &gt; 100:
+        bot.send_message(message.chat.id, &#34;Какой-то странный возраст. Не верю! Отвечай честно.&#34;)
+        return
+    else:
+        # Возраст введён корректно, можно идти дальше
+        bot.send_message(message.chat.id, &#34;Когда-то и мне было столько лет...эх... Впрочем, не будем отвлекаться. &#34;
+                                          &#34;Отправь мне какую-нибудь фотографию.&#34;)
+        dbworker.set_state(message.chat.id, config.States.S_SEND_PIC.value)</code></pre></div><p>Как видно из скриншота ниже, при вводе некорректных значений бот не сбрасывает диалог и не переходит к следующим вопросам, а «удерживает» состояние, вынуждая пользователя ответить корректно, при этом на шаге №1 любой ввод позволял перейти далее.</p><p><center><figure style="padding:.25rem;margin:1rem 0"><img style=max-width:100%;height:auto src=/test-web/images/l11_2.png alt="Некорректный ввод"><figcaption><h4><i>Некорректный ввод</i></h4></figcaption></figure></center></p><p>Наконец, на последнем шаге мы ожидаем отправку изображения, поэтому дополнительно выставляем нужный <code>content_types</code>:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none>@bot.message_handler(content_types=[&#34;photo&#34;],
+                     func=lambda message: dbworker.get_current_state(message.chat.id) == config.States.S_SEND_PIC.value)
+def user_sending_photo(message):
+    # То, что это фотография, мы уже проверили в хэндлере, никаких дополнительных действий не нужно.
+    bot.send_message(message.chat.id, &#34;Отлично! Больше от тебя ничего не требуется. Если захочешь пообщаться снова - &#34;
+                     &#34;отправь команду /start.&#34;)
+    dbworker.set_state(message.chat.id, config.States.S_START.value)</code></pre></div><p>Если теперь запустить бота и проверить, логика должна быть правильной: на каждом этапе бот ожидает от юзера конкретное действия, возможно, проверяя корректность ввода. По команде <strong>/reset</strong> сбрасывает в начало, а благодаря записи текущего состояния на диск, боту не страшны перезапуски. Остаётся одна маленькая деталь: вдруг пользователь случайно очистит диалог с ботом или вдруг приложение заглючит и придётся снова вызывать команду <strong>/start</strong>. Добавим в первый обработчик несколько проверок, чтобы после долгой разлуки бот продолжал общаться с юзером на том месте, где они остановились:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none># Начало диалога
+@bot.message_handler(commands=[&#34;start&#34;])
+def cmd_start(message):
+    state = dbworker.get_current_state(message.chat.id)
+    if state == config.States.S_ENTER_NAME.value:
+        bot.send_message(message.chat.id, &#34;Кажется, кто-то обещал отправить своё имя, но так и не сделал этого :( Жду...&#34;)
+    elif state == config.States.S_ENTER_AGE.value:
+        bot.send_message(message.chat.id, &#34;Кажется, кто-то обещал отправить свой возраст, но так и не сделал этого :( Жду...&#34;)
+    elif state == config.States.S_SEND_PIC.value:
+        bot.send_message(message.chat.id, &#34;Кажется, кто-то обещал отправить картинку, но так и не сделал этого :( Жду...&#34;)
+    else:  # Под &#34;остальным&#34; понимаем состояние &#34;0&#34; - начало диалога
+        bot.send_message(message.chat.id, &#34;Привет! Как я могу к тебе обращаться?&#34;)
+        dbworker.set_state(message.chat.id, config.States.S_ENTER_NAME.value)</code></pre></div><p>Теперь вы умеете контролировать диалог пользователя и бота. Не забудьте изучить <a href=https://github.com/MasterGroosha/telegram-tutorial/tree/master/lesson_11>полный код урока</a> на Github, если что-то осталось непонятно.</p><p>P.S. Пара ссылок про конечные автоматы:<br>1. <a href=https://tproger.ru/translations/finite-state-machines-theory-and-implementation/>https://tproger.ru/translations/finite-state-machines-theory-and-implementation/</a><br>2. <a href=https://habrahabr.ru/post/160105/>https://habrahabr.ru/post/160105/</a></p><p><a href=/telegram-tutorial/docs/lesson_10/ class=book-btn style=float:left>← Урок №10</a>
+<a href=/telegram-tutorial/docs/lesson_12/ class=book-btn style=float:right>Урок №12 →</a></p></article></div><aside class="book-toc level-3 fixed"><nav id=TableOfContents><ul><li><ul><li><a href=#общая-часть>Общая часть</a></li><li><a href=#пишем-бота>Пишем бота</a></li></ul></li></ul></nav></aside></main></body></html>
