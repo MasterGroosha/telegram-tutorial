@@ -79,3 +79,5 @@ if __name__ == '__main__':
 На этом первый урок окончен.
 
 {{< btn_right relref="/docs/lesson_02" >}}Урок №2{{< /btn_right >}}
+
+<script async src="https://comments.app/js/widget.js" data-comments-app-website="TvibSQx_" data-limit="5" data-dislikes="1" data-colorful="1"></script>
