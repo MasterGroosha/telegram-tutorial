@@ -1,126 +1,5 @@
-<!DOCTYPE html>
-
-
-
-
-
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>
-  
-    
-    Урок 10. Bot API v3. Автоматизируем работу в группах
-  
- | Пишем ботов для Telegram на языке Python</title>
-
-
-
-<link rel="stylesheet" href="/test-web/css/override.css">
-<link rel="stylesheet" href="/telegram-tutorial/book.min.b7d5ee4f671b06dde5fd61ab409a54048ba7759e99fed39ac32a7be45d4d92cd.css">
-
-<meta property="og:title" content="Пишем ботов для Telegram на языке Python" />
-<meta property="og:image" content="https://telegram.org/file/811140058/2/7GzMJk4Ij54/a1649c56fa9f805828" />
-<meta property="og:description" content="Учебник для ботописателей" />
-
-
-
-<link rel="icon" href="/telegram-tutorial/favicon.png" type="image/x-icon">
-
-
-<!--
-Made with Book Theme
-https://github.com/alex-shpak/hugo-book
--->
-
-  
-</head>
-
-<body>
-  <input type="checkbox" style="display: none" id="menu-control" />
-  <main class="flex container">
-
-    <aside class="book-menu fixed">
-      <nav>
-<h2 class="book-brand">
-  <a href="https://mastergroosha.github.io/telegram-tutorial/">Пишем ботов для Telegram на языке Python</a>
-</h2>
-
-
-
-    
-  
-  
-  
-
-  <style>
-  nav ul a[href$="\2ftelegram-tutorial\2f docs\2flesson_10\2f "] {
-      color: #004ed0;
-  }
-  </style>
-
-<ul>
-<li><a href="/telegram-tutorial/docs/lesson_01/">Урок 1. Введение, простой echo-бот</a></li>
-<li><a href="/telegram-tutorial/docs/lesson_02/">Урок 2. “Угадай мелодию”. Подготовка</a></li>
-<li><a href="/telegram-tutorial/docs/lesson_03/">Урок 3. “Угадай мелодию”. Завершаем бота</a></li>
-<li><a href="/telegram-tutorial/docs/lesson_04/">Урок 4. Вебхуки</a></li>
-<li><a href="/telegram-tutorial/docs/lesson_05/">Урок 5. Автопостинг в каналы</a></li>
-<li><a href="/telegram-tutorial/docs/lesson_06/">Урок 6. Собираем аналитику при помощи Botan</a></li>
-<li><a href="/telegram-tutorial/docs/lesson_07/">Урок 7. Встраиваемые боты (Inline)</a></li>
-<li><a href="/telegram-tutorial/docs/lesson_08/">Урок 8. Bot API v2: Кнопки и редактирование сообщений</a></li>
-<li><a href="/telegram-tutorial/docs/lesson_09/">Урок 9. Bot API v2: Специальные кнопки, опять редактирование сообщений, кэшированный инлайн</a></li>
-<li><a href="/telegram-tutorial/docs/lesson_10/">Урок 10. Bot API v3. Автоматизируем работу в группах</a></li>
-<li><a href="/telegram-tutorial/docs/lesson_11/">Урок 11. Ведём (более-менее) осмысленные диалоги. Конечные автоматы</a></li>
-<li><a href="/telegram-tutorial/docs/lesson_12/">Урок 12. Запускаем несколько ботов на одном сервере</a></li>
-</ul>
-
-
-
-
-
-</nav>
-
-
-
-    </aside>
-
-    <div class="book-page">
-      <header class="align-center justify-between book-header">
-  <label for="menu-control">
-    <img src="/telegram-tutorial/svg/menu.svg" alt="Menu" />
-  </label>
-</header>
-
-      
-<header class="markdown">
-  <h1>Урок 10. Bot API v3. Автоматизируем работу в группах</h1>
-</header>
-<article class="markdown">
-
-<p>⁠⁠</p>
-
-<p>С момента публикации <a href="/telegram-tutorial/docs/lesson_09/">предыдущего урока</a> и по состоянию на момент написания этого, Telegram выпустил <a href="https://core.telegram.org/bots/api-changelog#may-18-2017">одно крупное обновление</a> Bot API (3.0), а также несколько мелких (3.1-3.3). Сразу отмечу, ни отправка видеосообщений, ни платежи (по ним есть отличный <a href="https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/payments_example.py">пример</a> в репозитории pyTelegramBotAPI), ни работа со стикерами рассмотрены не будут.</p>
-
-<h2 id="удаляем-сообщения">Удаляем сообщения</h2>
-
-<p>Начнём с того, что научим нашего бота в группе удалять сообщения, в которых есть ссылки. Добавим бота в группу и назначим его администратором с правом удаления и блокировки (пригодится позже).</p>
-
-<p><center>
-<figure style="padding: 0.25rem; margin: 1rem 0">
-    <img style="max-width: 100%; height: auto;" src="/test-web/images/l10_1.png" alt="Выдача прав боту"/>
-    <figcaption>
-         <h4><i>Выдача прав боту</i></h4>
-    </figcaption>
-</figure>
-</center></p>
-
-<p>Дабы избежать неприятных ситуаций, нам необходимо определить две вещи: в какой именно группе он будет удалять сообщения и как отличить сообщения с ссылками от всех остальных? Для начала узнаем и запишем куда-нибудь ID нашей группы. А что делать с ссылками? Неужели нам придётся использовать <a href="https://ru.wikipedia.org/wiki/Регулярные_выражения">регулярные выражения</a>, создавая себе <a href="https://imgs.xkcd.com/comics/perl_problems.png">ещё одну проблему</a>? Конечно, нет! Все «особые» элементы, будь то ссылки, @юзернеймы, команды ботов и т.д. складываются в массив <code>entities</code> в объекте <code>Message</code>, нам остаётся лишь проверить тип объекта и решить, удалять конкретное сообщение или нет. За последнее отвечает метод <code>delete_message</code>, принимающий на вход два аргумента: ID чата и ID сообщения.</p>
-
-<p>Перейдём непосредственно к коду. Дабы упростить себе жизнь, зададим нужные условия срабатывания (нужный ID чата и непустой массив entities) сразу в хэндлер, это сэкономит нам несколько лишних проверок.</p>
-
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-none" data-lang="none">GROUP_ID = -10012345  # Ваш ID группы
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Урок 10. Bot API v3. Автоматизируем работу в группах
+| Пишем ботов для Telegram на языке Python</title><link rel=stylesheet href=/test-web/css/override.css><link rel=stylesheet href=/telegram-tutorial/book.min.b7d5ee4f671b06dde5fd61ab409a54048ba7759e99fed39ac32a7be45d4d92cd.css><meta property=og:title content="Пишем ботов для Telegram на языке Python"><meta property=og:image content=https://telegram.org/file/811140058/2/7GzMJk4Ij54/a1649c56fa9f805828><meta property=og:description content="Учебник для ботописателей"><link rel=icon href=/telegram-tutorial/favicon.png type=image/x-icon></head><body><input type=checkbox style=display:none id=menu-control><main class="flex container"><aside class="book-menu fixed"><nav><h2 class=book-brand><a href=https://mastergroosha.github.io/telegram-tutorial/>Пишем ботов для Telegram на языке Python</a></h2><style>nav ul a[href$=\2ftelegram-tutorial\2f docs\2flesson_10\2f ]{color:#004ed0}</style><ul><li><a href=/telegram-tutorial/docs/lesson_01/>Урок 1. Введение, простой echo-бот</a></li><li><a href=/telegram-tutorial/docs/lesson_02/>Урок 2. “Угадай мелодию”. Подготовка</a></li><li><a href=/telegram-tutorial/docs/lesson_03/>Урок 3. “Угадай мелодию”. Завершаем бота</a></li><li><a href=/telegram-tutorial/docs/lesson_04/>Урок 4. Вебхуки</a></li><li><a href=/telegram-tutorial/docs/lesson_05/>Урок 5. Автопостинг в каналы</a></li><li><a href=/telegram-tutorial/docs/lesson_06/>Урок 6. Собираем аналитику при помощи Botan</a></li><li><a href=/telegram-tutorial/docs/lesson_07/>Урок 7. Встраиваемые боты (Inline)</a></li><li><a href=/telegram-tutorial/docs/lesson_08/>Урок 8. Bot API v2: Кнопки и редактирование сообщений</a></li><li><a href=/telegram-tutorial/docs/lesson_09/>Урок 9. Bot API v2: Специальные кнопки, опять редактирование сообщений, кэшированный инлайн</a></li><li><a href=/telegram-tutorial/docs/lesson_10/>Урок 10. Bot API v3. Автоматизируем работу в группах</a></li><li><a href=/telegram-tutorial/docs/lesson_11/>Урок 11. Ведём (более-менее) осмысленные диалоги. Конечные автоматы</a></li><li><a href=/telegram-tutorial/docs/lesson_12/>Урок 12. Запускаем несколько ботов на одном сервере</a></li></ul></nav></aside><div class=book-page><header class="align-center justify-between book-header"><label for=menu-control><img src=/telegram-tutorial/svg/menu.svg alt=Menu></label></header><header class=markdown><h1>Урок 10. Bot API v3. Автоматизируем работу в группах</h1></header><article class=markdown><p>⁠⁠</p><p>С момента публикации <a href=/telegram-tutorial/docs/lesson_09/>предыдущего урока</a> и по состоянию на момент написания этого, Telegram выпустил <a href=https://core.telegram.org/bots/api-changelog#may-18-2017>одно крупное обновление</a> Bot API (3.0), а также несколько мелких (3.1-3.3). Сразу отмечу, ни отправка видеосообщений, ни платежи (по ним есть отличный <a href=https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/payments_example.py>пример</a> в репозитории pyTelegramBotAPI), ни работа со стикерами рассмотрены не будут.</p><h2 id=удаляем-сообщения>Удаляем сообщения</h2><p>Начнём с того, что научим нашего бота в группе удалять сообщения, в которых есть ссылки. Добавим бота в группу и назначим его администратором с правом удаления и блокировки (пригодится позже).</p><p><center><figure style="padding:.25rem;margin:1rem 0"><img style=max-width:100%;height:auto src=/test-web/images/l10_1.png alt="Выдача прав боту"><figcaption><h4><i>Выдача прав боту</i></h4></figcaption></figure></center></p><p>Дабы избежать неприятных ситуаций, нам необходимо определить две вещи: в какой именно группе он будет удалять сообщения и как отличить сообщения с ссылками от всех остальных? Для начала узнаем и запишем куда-нибудь ID нашей группы. А что делать с ссылками? Неужели нам придётся использовать <a href=https://ru.wikipedia.org/wiki/Регулярные_выражения>регулярные выражения</a>, создавая себе <a href=https://imgs.xkcd.com/comics/perl_problems.png>ещё одну проблему</a>? Конечно, нет! Все «особые» элементы, будь то ссылки, @юзернеймы, команды ботов и т.д. складываются в массив <code>entities</code> в объекте <code>Message</code>, нам остаётся лишь проверить тип объекта и решить, удалять конкретное сообщение или нет. За последнее отвечает метод <code>delete_message</code>, принимающий на вход два аргумента: ID чата и ID сообщения.</p><p>Перейдём непосредственно к коду. Дабы упростить себе жизнь, зададим нужные условия срабатывания (нужный ID чата и непустой массив entities) сразу в хэндлер, это сэкономит нам несколько лишних проверок.</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none>GROUP_ID = -10012345  # Ваш ID группы
 
 @bot.message_handler(func=lambda message: message.entities is not None and message.chat.id == GROUP_ID)
 def delete_links(message):
@@ -130,31 +9,7 @@ def delete_links(message):
             # Мы можем не проверять chat.id, он проверяется ещё в хэндлере 
             bot.delete_message(message.chat.id, message.message_id)
         else:
-            return</code></pre></div>
-
-<p>Запустим бота и попробуем отправить сообщение с ссылкой. Если вы всё сделали правильно, оно мгновенно исчезнет и в разделе «Недавние действия» (Recent Actions) появится запись об удалённом сообщении.</p>
-
-<p><center>
-<figure style="padding: 0.25rem; margin: 1rem 0">
-    <img style="max-width: 100%; height: auto;" src="/test-web/images/l10_2.png" alt="Сообщение удалено"/>
-    <figcaption>
-         <h4><i>Сообщение удалено</i></h4>
-    </figcaption>
-</figure>
-</center></p>
-
-<p>Точно так же можно сделать удаление чего угодно: стикеров, репостов из неугодных каналов, матерных сообщений и т.д. Возможности (почти) безграничны!</p>
-
-<h2 id="read-only-и-прочие-мягкие-наказания">Read-Only и прочие «мягкие» наказания</h2>
-
-<p>Представьте, что у вас есть группа, например, &ldquo;Международный клуб любителей мяса&rdquo;, в котором люди на разных языках делятся своими впечатлениями от поедания свинины, говядины, баранины и т.д.<br />
-Конечно, время от времени в чатик будут приходить вегетарианцы и высказывать недовольство, но так как мы терпеливые люди, не будем банить веганов, а просто запретим им писать сообщения некоторое время, дабы они успокоились и вели дискуссию в рамках тематики чата. Усложним себе задачу и будем оповещать пользователей о временном ограничении прав, исходя из их языковой принадлежности.</p>
-
-<p>Начиная с <a href="https://medium.com/@tglive/telegram-4-1-bbff31db5132">Telegram 4.1</a>, у администраторов групп появилась возможность точечно настраивать права и ограничения пользователей. В Bot API за операцию ограничения ответственен метод <code>restrict_chat_member</code>, принимающий на вход ID чата, ID юзера, список ограничений, а также параметр <code>until_date</code> со значением времени (Unix Time), до которого эти ограничения действуют, причём если указать время с разницей меньше 30 секунд или больше 366 дней от текущего, Telegram воспринимает это, как «навсегда». В нашем случае Read-Only режим будет выдаваться на 10 минут, т.е. 600 секунд.</p>
-
-<p>Давайте теперь разберёмся, на каком языке отвечать пользователю. В объекте <a href="https://core.telegram.org/bots/api#user">User</a> есть поле <code>language_code</code>, содержащее языковую метку пользователя. Не всё так просто, ведь в зависимости от настроек системы и местоположения пользователя, его языковая метка может быть <code>ru</code>, <code>en-GB</code>, <code>en-US</code> или вообще какой-нибудь <code>nan-Hant-TW</code>. Подробно о строении таких меток можно прочесть <a href="https://www.w3.org/International/articles/language-tags/index.en">здесь</a>. В нашем случае задача немного упрощается, т.к. нам нужен только первый элемент (сам язык), независимо от региона (будем считать, к примеру, что «английский» английский и американский английский для нас одинаковы). Напишем наипростейшую определялку языка, которая будет возвращать <code>ru</code> для русского языка и <code>en</code> для всех остальных. В реальной жизни, конечно, стоит сделать поддержку большего числа языков.</p>
-
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-none" data-lang="none">def get_language(lang_code):
+            return</code></pre></div><p>Запустим бота и попробуем отправить сообщение с ссылкой. Если вы всё сделали правильно, оно мгновенно исчезнет и в разделе «Недавние действия» (Recent Actions) появится запись об удалённом сообщении.</p><p><center><figure style="padding:.25rem;margin:1rem 0"><img style=max-width:100%;height:auto src=/test-web/images/l10_2.png alt="Сообщение удалено"><figcaption><h4><i>Сообщение удалено</i></h4></figcaption></figure></center></p><p>Точно так же можно сделать удаление чего угодно: стикеров, репостов из неугодных каналов, матерных сообщений и т.д. Возможности (почти) безграничны!</p><h2 id=read-only-и-прочие-мягкие-наказания>Read-Only и прочие «мягкие» наказания</h2><p>Представьте, что у вас есть группа, например, &ldquo;Международный клуб любителей мяса&rdquo;, в котором люди на разных языках делятся своими впечатлениями от поедания свинины, говядины, баранины и т.д.<br>Конечно, время от времени в чатик будут приходить вегетарианцы и высказывать недовольство, но так как мы терпеливые люди, не будем банить веганов, а просто запретим им писать сообщения некоторое время, дабы они успокоились и вели дискуссию в рамках тематики чата. Усложним себе задачу и будем оповещать пользователей о временном ограничении прав, исходя из их языковой принадлежности.</p><p>Начиная с <a href=https://medium.com/@tglive/telegram-4-1-bbff31db5132>Telegram 4.1</a>, у администраторов групп появилась возможность точечно настраивать права и ограничения пользователей. В Bot API за операцию ограничения ответственен метод <code>restrict_chat_member</code>, принимающий на вход ID чата, ID юзера, список ограничений, а также параметр <code>until_date</code> со значением времени (Unix Time), до которого эти ограничения действуют, причём если указать время с разницей меньше 30 секунд или больше 366 дней от текущего, Telegram воспринимает это, как «навсегда». В нашем случае Read-Only режим будет выдаваться на 10 минут, т.е. 600 секунд.</p><p>Давайте теперь разберёмся, на каком языке отвечать пользователю. В объекте <a href=https://core.telegram.org/bots/api#user>User</a> есть поле <code>language_code</code>, содержащее языковую метку пользователя. Не всё так просто, ведь в зависимости от настроек системы и местоположения пользователя, его языковая метка может быть <code>ru</code>, <code>en-GB</code>, <code>en-US</code> или вообще какой-нибудь <code>nan-Hant-TW</code>. Подробно о строении таких меток можно прочесть <a href=https://www.w3.org/International/articles/language-tags/index.en>здесь</a>. В нашем случае задача немного упрощается, т.к. нам нужен только первый элемент (сам язык), независимо от региона (будем считать, к примеру, что «английский» английский и американский английский для нас одинаковы). Напишем наипростейшую определялку языка, которая будет возвращать <code>ru</code> для русского языка и <code>en</code> для всех остальных. В реальной жизни, конечно, стоит сделать поддержку большего числа языков.</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none>def get_language(lang_code):
     # Иногда language_code может быть None
     if not lang_code:
         return &#34;en&#34;
@@ -163,92 +18,19 @@ def delete_links(message):
     if lang_code == &#34;ru&#34;:
         return &#34;ru&#34;
     else:
-        return &#34;en&#34;</code></pre></div>
-
-<p>И подготовим небольшой JSON со строками:</p>
-
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-none" data-lang="none">strings = {
+        return &#34;en&#34;</code></pre></div><p>И подготовим небольшой JSON со строками:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none>strings = {
     &#34;ru&#34;: {
         &#34;ro_msg&#34;: &#34;Вам запрещено отправлять сюда сообщения в течение 10 минут.&#34;
     },
     &#34;en&#34;: {
         &#34;ro_msg&#34;: &#34;You&#39;re not allowed to send messages here for 10 minutes.&#34;
     }
-}</code></pre></div>
-
-<p>Теперь напишем обработчик, который будет реагировать на набор фраз, выдавать режим Read-Only пользователю на 10 минут и уведомлять его на родном языке. Не забудьте импортировать метод <code>time</code> из одноимённого модуля!</p>
-
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-none" data-lang="none">restricted_messages = [&#34;я веган&#34;, &#34;i am vegan&#34;]
+}</code></pre></div><p>Теперь напишем обработчик, который будет реагировать на набор фраз, выдавать режим Read-Only пользователю на 10 минут и уведомлять его на родном языке. Не забудьте импортировать метод <code>time</code> из одноимённого модуля!</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none>restricted_messages = [&#34;я веган&#34;, &#34;i am vegan&#34;]
 
 # Выдаём Read-only за определённые фразы
 @bot.message_handler(func=lambda message: message.text and message.text.lower() in restricted_messages and message.chat.id == GROUP_ID)
 def set_ro(message):
     bot.restrict_chat_member(message.chat.id, message.from_user.id, until_date=time()+600)
     bot.send_message(message.chat.id, strings.get(get_language(message.from_user.language_code)).get(&#34;ro_msg&#34;),
-                     reply_to_message_id=message.message_id)</code></pre></div>
-
-<p>Запустим бота и попросим людей с разными language_code выступить в роли противников мяса:</p>
-
-<p><center>
-<figure style="padding: 0.25rem; margin: 1rem 0">
-    <img style="max-width: 100%; height: auto;" src="/test-web/images/l10_3.png" alt="Бот-полиглот"/>
-    <figcaption>
-         <h4><i>Бот-полиглот</i></h4>
-    </figcaption>
-</figure>
-</center></p>
-
-<h2 id="заключение">Заключение</h2>
-
-<p>В этом уроке мы кратко ознакомились с новыми фишками третьей версии Telegram Bot API, научились удалять сообщения, если они соответствуют одному из заданных критериев и научились «мягко» ограничивать пользователей, не удаляя их из группы. Помимо <code>restrict_chat_member</code> существует метод <code>promote_chat_member</code> для наделения пользователя определёнными администраторскими правами, он остаётся для самостоятельного изучения.</p>
-
-<p>Исходный код бота этого урока, как обычно, расположен на <a href="https://github.com/MasterGroosha/telegram-tutorial/blob/master/lesson_10/bot.py">Github</a>.</p>
-
-<p>
-
-
-
-  
-
-<a  href="/telegram-tutorial/docs/lesson_09/"   class="book-btn" style="float: left;">← Урок №9</a>
-
-
-
-
-
-  
-
-<a  href="/telegram-tutorial/docs/lesson_11/"   class="book-btn" style="float: right;">Урок №11 →</a>
-</p>
-</article>
-
-      
-
-      
-    </div>
-
-    
-  
-
-  <aside class="book-toc level-3 fixed">
-    <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#удаляем-сообщения">Удаляем сообщения</a></li>
-<li><a href="#read-only-и-прочие-мягкие-наказания">Read-Only и прочие «мягкие» наказания</a></li>
-<li><a href="#заключение">Заключение</a></li>
-</ul></li>
-</ul>
-</nav>
-  </aside>
-
-
-
-  </main>
-  
-  
-  
-</body>
-
-</html>
+                     reply_to_message_id=message.message_id)</code></pre></div><p>Запустим бота и попросим людей с разными language_code выступить в роли противников мяса:</p><p><center><figure style="padding:.25rem;margin:1rem 0"><img style=max-width:100%;height:auto src=/test-web/images/l10_3.png alt=Бот-полиглот><figcaption><h4><i>Бот-полиглот</i></h4></figcaption></figure></center></p><h2 id=заключение>Заключение</h2><p>В этом уроке мы кратко ознакомились с новыми фишками третьей версии Telegram Bot API, научились удалять сообщения, если они соответствуют одному из заданных критериев и научились «мягко» ограничивать пользователей, не удаляя их из группы. Помимо <code>restrict_chat_member</code> существует метод <code>promote_chat_member</code> для наделения пользователя определёнными администраторскими правами, он остаётся для самостоятельного изучения.</p><p>Исходный код бота этого урока, как обычно, расположен на <a href=https://github.com/MasterGroosha/telegram-tutorial/blob/master/lesson_10/bot.py>Github</a>.</p><p><a href=/telegram-tutorial/docs/lesson_09/ class=book-btn style=float:left>← Урок №9</a>
+<a href=/telegram-tutorial/docs/lesson_11/ class=book-btn style=float:right>Урок №11 →</a></p></article></div><aside class="book-toc level-3 fixed"><nav id=TableOfContents><ul><li><ul><li><a href=#удаляем-сообщения>Удаляем сообщения</a></li><li><a href=#read-only-и-прочие-мягкие-наказания>Read-Only и прочие «мягкие» наказания</a></li><li><a href=#заключение>Заключение</a></li></ul></li></ul></nav></aside></main></body></html>

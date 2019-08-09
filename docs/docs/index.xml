@@ -1,139 +1,41 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Docs on Пишем ботов для Telegram на языке Python</title>
-    <link>https://mastergroosha.github.io/telegram-tutorial/docs/</link>
-    <description>Recent content in Docs on Пишем ботов для Telegram на языке Python</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>ru-RU</language>
-    
-	<atom:link href="https://mastergroosha.github.io/telegram-tutorial/docs/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-    <item>
-      <title>Урок 1. Введение, простой echo-бот</title>
-      <link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_01/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_01/</guid>
-      <description>Введение Приветствую тебя, читатель! Telegram Bot API – это мощный инструмент для вообще чего угодно. Автоматизация действий, работа с пользователями, онлайн-магазины, игры и много чего ещё. В этом учебнике мы научимся писать ботов для Telegram на языке Python.
-Сразу оговорюсь: тот бот, который получится в итоге - это лишь прототип, цель всех этих постов - рассказать об основах ботостроения, показать, как можно за короткое время написать простого бота для своих нужд.</description>
-    </item>
-    
-    <item>
-      <title>Урок 10. Bot API v3. Автоматизируем работу в группах</title>
-      <link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_10/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_10/</guid>
-      <description>⁠⁠
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Docs on Пишем ботов для Telegram на языке Python</title><link>https://mastergroosha.github.io/telegram-tutorial/docs/</link><description>Recent content in Docs on Пишем ботов для Telegram на языке Python</description><generator>Hugo -- gohugo.io</generator><language>ru-RU</language><atom:link href="https://mastergroosha.github.io/telegram-tutorial/docs/index.xml" rel="self" type="application/rss+xml"/><item><title>Урок 1. Введение, простой echo-бот</title><link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_01/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_01/</guid><description>Введение Приветствую тебя, читатель! Telegram Bot API – это мощный инструмент для вообще чего угодно. Автоматизация действий, работа с пользователями, онлайн-магазины, игры и много чего ещё. В этом учебнике мы научимся писать ботов для Telegram на языке Python.
+Сразу оговорюсь: тот бот, который получится в итоге - это лишь прототип, цель всех этих постов - рассказать об основах ботостроения, показать, как можно за короткое время написать простого бота для своих нужд.</description></item><item><title>Урок 10. Bot API v3. Автоматизируем работу в группах</title><link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_10/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_10/</guid><description>⁠⁠
 С момента публикации предыдущего урока и по состоянию на момент написания этого, Telegram выпустил одно крупное обновление Bot API (3.0), а также несколько мелких (3.1-3.3). Сразу отмечу, ни отправка видеосообщений, ни платежи (по ним есть отличный пример в репозитории pyTelegramBotAPI), ни работа со стикерами рассмотрены не будут.
-Удаляем сообщения Начнём с того, что научим нашего бота в группе удалять сообщения, в которых есть ссылки. Добавим бота в группу и назначим его администратором с правом удаления и блокировки (пригодится позже).</description>
-    </item>
-    
-    <item>
-      <title>Урок 11. Ведём (более-менее) осмысленные диалоги. Конечные автоматы</title>
-      <link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_11/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_11/</guid>
-      <description>Общая часть Полезных ботов мы уже умеем делать (если вам вдруг так не кажется, перечитайте первые уроки), теперь пора делать, кхм, «смышлённых».
-Но для начала – немного теории. Будем считать, что диалог пользователя с ботом можно разбить на логические части: начало диалога, запрос одной информации, запрос другой информации, возврат к определенному этапу диалога, конец диалога. При этом можно сказать, что при каждом сообщении пользователя, его состояние (или состояние бота, с какой стороны посмотреть) меняется, и между этими состояниями осуществляются переходы.</description>
-    </item>
-    
-    <item>
-      <title>Урок 12. Запускаем несколько ботов на одном сервере</title>
-      <link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_12/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_12/</guid>
-      <description>Введение Для тех, у кого дежавю↕Если вам вдруг кажется, что нижеприведённый текст вы уже где-то видели, то вы не ошиблись: материал был когда-то давно разбит на две части и располагался в секции «Дополнительные материалы».По моему мнению (а оно может не совпадать с вашим), боты на вебхуках надёжнее ботов, использующих поллинг.
-Связано это в первую очередь с моими воспоминаниями из августа-сентября 2015 года, когда каждую ночь падали боты из-за Gateway Timeout&amp;rsquo;ов.</description>
-    </item>
-    
-    <item>
-      <title>Урок 2. “Угадай мелодию”. Подготовка</title>
-      <link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_02/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_02/</guid>
-      <description>Введение Нашей целью будет создание простой игры из серии &amp;ldquo;Угадай мелодию&amp;rdquo;. В первом уроке мы договорились, что мы делаем прототип, поэтому в том боте, который мы получим, не будет ни таблицы рекордов, ни какой-либо статистики, ни поддержки групповых чатов. Зато мы научимся создавать кастомные клавиатуры, отправлять голосовые заметки и создавать мультишаговые команды.
+Удаляем сообщения Начнём с того, что научим нашего бота в группе удалять сообщения, в которых есть ссылки. Добавим бота в группу и назначим его администратором с правом удаления и блокировки (пригодится позже).</description></item><item><title>Урок 11. Ведём (более-менее) осмысленные диалоги. Конечные автоматы</title><link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_11/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_11/</guid><description>Общая часть Полезных ботов мы уже умеем делать (если вам вдруг так не кажется, перечитайте первые уроки), теперь пора делать, кхм, «смышлённых».
+Но для начала – немного теории. Будем считать, что диалог пользователя с ботом можно разбить на логические части: начало диалога, запрос одной информации, запрос другой информации, возврат к определенному этапу диалога, конец диалога. При этом можно сказать, что при каждом сообщении пользователя, его состояние (или состояние бота, с какой стороны посмотреть) меняется, и между этими состояниями осуществляются переходы.</description></item><item><title>Урок 12. Запускаем несколько ботов на одном сервере</title><link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_12/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_12/</guid><description>Введение
+Для тех, у кого дежавю
+↕
+Если вам вдруг кажется, что нижеприведённый текст вы уже где-то видели, то вы не ошиблись: материал был когда-то давно разбит на две части и располагался в секции «Дополнительные материалы».
+По моему мнению (а оно может не совпадать с вашим), боты на вебхуках надёжнее ботов, использующих поллинг.
+Связано это в первую очередь с моими воспоминаниями из августа-сентября 2015 года, когда каждую ночь падали боты из-за Gateway Timeout&amp;rsquo;ов.</description></item><item><title>Урок 2. “Угадай мелодию”. Подготовка</title><link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_02/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_02/</guid><description>Введение Нашей целью будет создание простой игры из серии &amp;ldquo;Угадай мелодию&amp;rdquo;. В первом уроке мы договорились, что мы делаем прототип, поэтому в том боте, который мы получим, не будет ни таблицы рекордов, ни какой-либо статистики, ни поддержки групповых чатов. Зато мы научимся создавать кастомные клавиатуры, отправлять голосовые заметки и создавать мультишаговые команды.
 Займёмся подготовкой базы данных для нашего бота.
-Учимся уважать серверы Telegram Итак, для начала, подготовим аудиофайлы для отправки.</description>
-    </item>
-    
-    <item>
-      <title>Урок 3. “Угадай мелодию”. Завершаем бота</title>
-      <link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_03/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_03/</guid>
-      <description>⁠
+Учимся уважать серверы Telegram Итак, для начала, подготовим аудиофайлы для отправки.</description></item><item><title>Урок 3. “Угадай мелодию”. Завершаем бота</title><link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_03/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_03/</guid><description>⁠
 Добавляем клавиатуру Что ж, настало время завершить начатое. В уроке №2 мы подготовили базу данных и хранилище для бота, осталось написать логику для него. Начнем с того, что добавим в файл utils.py функцию, создающую кастомную клавиатуру с вариантами ответа.
-def generate_markup(right_answer, wrong_answers):&amp;#34;&amp;#34;&amp;#34;Создаем кастомную клавиатуру для выбора ответа:param right_answer: Правильный ответ:param wrong_answers: Набор неправильных ответовОбъект кастомной клавиатуры&amp;#34;&amp;#34;&amp;#34;markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)# Склеиваем правильный ответ с неправильнымиall_answers = &amp;#39;{},{}&amp;#39;.</description>
-    </item>
-    
-    <item>
-      <title>Урок 4. Вебхуки</title>
-      <link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_04/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_04/</guid>
-      <description>⁠
+def generate_markup(right_answer, wrong_answers):
+&amp;#34;&amp;#34;&amp;#34;
+Создаем кастомную клавиатуру для выбора ответа
+:param right_answer: Правильный ответ
+:param wrong_answers: Набор неправильных ответов
+Объект кастомной клавиатуры
+&amp;#34;&amp;#34;&amp;#34;
+markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
+# Склеиваем правильный ответ с неправильными
+all_answers = &amp;#39;{},{}&amp;#39;.</description></item><item><title>Урок 4. Вебхуки</title><link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_04/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_04/</guid><description>⁠
 С простым ботом наконец-то разобрались, теперь будем осваивать различные &amp;ldquo;плюшки&amp;rdquo;. Первая из них и, пожалуй, самая главная, — вебхуки.
 А в чём, собственно, разница? (Следующий абзац был написан в 2015-2016г., библиотеки с того момента много обновлялись, поэтому в некоторых случаях использовать Long Polling будет не хуже, чем вебхуки).
-Давайте для начала разберемся, как боты принимают сообщения. Первый и наиболее простой вариант заключается в периодическом опросе серверов Telegram на предмет наличия новой информации.</description>
-    </item>
-    
-    <item>
-      <title>Урок 5. Автопостинг в каналы</title>
-      <link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_05/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_05/</guid>
-      <description>⁠
-Примечание↕В начале 2017 года ВК начал требовать токен пользователя для вызова метода wall.get и многих других. Процесс получения токена для ВК не относится к теме учебника, следовательно, описан не будет. По ссылке https://vk.com/dev/manuals любой желающий сможет найти документацию и описание процесса получения токена.Небольшое отступление. Когда в Telegram появились каналы, поначалу я к ним относился как к неудачной попытке клонировать Twitter. Сразу появились тупые канальчики с тупыми картиночками, что только усугубляло положение дел.</description>
-    </item>
-    
-    <item>
-      <title>Урок 6. Собираем аналитику при помощи Botan (неактуально)</title>
-      <link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_06/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_06/</guid>
-      <description>⚠️ Важно!↕Сервис Botan в середине 2018 года был отключен и больше не работает. Урок оставлен исключительно для истории.Вы наверняка уже видели новость о такой чудесной системе аналитики для ботов Telegram, как Botan. Сам я ей пользуюсь уже несколько месяцев, поэтому могу с уверенностью сказать, что штука эта очень полезная и качественная. Сегодня мы научимся пользоваться Ботаном в наших Telegram-ботах. В данном уроке будет рассмотрено только подключение бота к Botan через веб-интерфейс, всё, что касается их бота, вы можете рассмотреть самостоятельно.</description>
-    </item>
-    
-    <item>
-      <title>Урок 7. Встраиваемые боты (Inline)</title>
-      <link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_07/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_07/</guid>
-      <description>⁠ ⚠️ Важно!↕Код, приведённый здесь, актуален для первой версии Bot API. Пожалуйста, откройте урок 8, чтобы узнать о важных изменениях.Введение 4 января 2016 года разработчики Telegram выпустили большое дополнение к существующему BotAPI, заключающееся в появлении встраиваемых ботов.
-К сожалению, не все до конца понимают, в чем их особенность. А вот в чем: если раньше для того, чтобы получить какую-либо информацию от бота и перекинуть её собеседнику нужно было открывать диалог с ботом, писать всякие команды, а потом пересылать ответ в нужный чат, то теперь всё стало быстрее и проще (для некоторых ситуаций): просто открываете нужный чат, вызываете бота, введя его ник в поле ввода сообщения, ставите пробел и пишете свой запрос.</description>
-    </item>
-    
-    <item>
-      <title>Урок 8. Bot API v2: Кнопки и редактирование сообщений</title>
-      <link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_08/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_08/</guid>
-      <description>Введение В начале апреля 2016 года вышло первое по-настоящему крупное обновление API для ботов. Изменений довольно много, поэтому материал я разобью на несколько частей. Сегодня поговорим об inline-кнопках и редактировании сообщений, а затем обсудим новые инлайн-режимы вместе со специальными кнопками для отправки геолокации и номера телефона.
+Давайте для начала разберемся, как боты принимают сообщения. Первый и наиболее простой вариант заключается в периодическом опросе серверов Telegram на предмет наличия новой информации.</description></item><item><title>Урок 5. Автопостинг в каналы</title><link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_05/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_05/</guid><description>⁠
+Примечание
+↕
+В начале 2017 года ВК начал требовать токен пользователя для вызова метода wall.get и многих других. Процесс получения токена для ВК не относится к теме учебника, следовательно, описан не будет. По ссылке https://vk.com/dev/manuals любой желающий сможет найти документацию и описание процесса получения токена.
+Небольшое отступление. Когда в Telegram появились каналы, поначалу я к ним относился как к неудачной попытке клонировать Twitter. Сразу появились тупые канальчики с тупыми картиночками, что только усугубляло положение дел.</description></item><item><title>Урок 6. Собираем аналитику при помощи Botan (неактуально)</title><link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_06/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_06/</guid><description>⚠️ Важно!
+↕
+Сервис Botan в середине 2018 года был отключен и больше не работает. Урок оставлен исключительно для истории.
+Вы наверняка уже видели новость о такой чудесной системе аналитики для ботов Telegram, как Botan. Сам я ей пользуюсь уже несколько месяцев, поэтому могу с уверенностью сказать, что штука эта очень полезная и качественная. Сегодня мы научимся пользоваться Ботаном в наших Telegram-ботах. В данном уроке будет рассмотрено только подключение бота к Botan через веб-интерфейс, всё, что касается их бота, вы можете рассмотреть самостоятельно.</description></item><item><title>Урок 7. Встраиваемые боты (Inline)</title><link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_07/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_07/</guid><description>⁠
+⚠️ Важно!
+↕
+Код, приведённый здесь, актуален для первой версии Bot API. Пожалуйста, откройте урок 8, чтобы узнать о важных изменениях.
+Введение 4 января 2016 года разработчики Telegram выпустили большое дополнение к существующему BotAPI, заключающееся в появлении встраиваемых ботов.
+К сожалению, не все до конца понимают, в чем их особенность. А вот в чем: если раньше для того, чтобы получить какую-либо информацию от бота и перекинуть её собеседнику нужно было открывать диалог с ботом, писать всякие команды, а потом пересылать ответ в нужный чат, то теперь всё стало быстрее и проще (для некоторых ситуаций): просто открываете нужный чат, вызываете бота, введя его ник в поле ввода сообщения, ставите пробел и пишете свой запрос.</description></item><item><title>Урок 8. Bot API v2: Кнопки и редактирование сообщений</title><link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_08/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_08/</guid><description>Введение В начале апреля 2016 года вышло первое по-настоящему крупное обновление API для ботов. Изменений довольно много, поэтому материал я разобью на несколько частей. Сегодня поговорим об inline-кнопках и редактировании сообщений, а затем обсудим новые инлайн-режимы вместе со специальными кнопками для отправки геолокации и номера телефона.
 Новые возможности Начнём с двух важных изменений:
-1) Каждая кнопка, будь то обычная или инлайн, это теперь самостоятельный объект KeyboardButton или InlineKeyboardButton, не забудьте обновить своих ботов!</description>
-    </item>
-    
-    <item>
-      <title>Урок 9. Bot API v2: Специальные кнопки, опять редактирование сообщений, кэшированный инлайн</title>
-      <link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_09/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_09/</guid>
-      <description>⁠
-Продолжаю рассказывать о нововведениях в Bot API версии 2. Я не буду рассказывать о методах getChat, getChatMember и т.д., которые появились в обновлении 2.1: они интуитивно понятны и особых проблем не вызывают. Вопросы могут возникнуть при изучении специальных обычных кнопок, вроде тех, что запрашивают у вас номер телефона и геолокацию, при попытке получить отредактированное сообщение, а также при работе с уже загруженными в облако объектами с инлайн-режимом. Обо всём по порядку.</description>
-    </item>
-    
-  </channel>
-</rss>
+1) Каждая кнопка, будь то обычная или инлайн, это теперь самостоятельный объект KeyboardButton или InlineKeyboardButton, не забудьте обновить своих ботов!</description></item><item><title>Урок 9. Bot API v2: Специальные кнопки, опять редактирование сообщений, кэшированный инлайн</title><link>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_09/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://mastergroosha.github.io/telegram-tutorial/docs/lesson_09/</guid><description>⁠
+Продолжаю рассказывать о нововведениях в Bot API версии 2. Я не буду рассказывать о методах getChat, getChatMember и т.д., которые появились в обновлении 2.1: они интуитивно понятны и особых проблем не вызывают. Вопросы могут возникнуть при изучении специальных обычных кнопок, вроде тех, что запрашивают у вас номер телефона и геолокацию, при попытке получить отредактированное сообщение, а также при работе с уже загруженными в облако объектами с инлайн-режимом. Обо всём по порядку.</description></item></channel></rss>
