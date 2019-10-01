@@ -13,6 +13,8 @@ BookToC: false
 Связаться с автором можно по адресу groosha (собака) protonmail.com.  
 Все исходные коды к урокам расположены в [этом репозитории](https://github.com/MasterGroosha/telegram-tutorial), а обсудить материал можно в [Telegram-чате](https://t.me/joinchat/ABtnIE7H7Q3TRRh8n8uNww).
 
+Поблагодарить автора (материально) можно <a href="https://money.yandex.ru/to/41001515922197" target="_blank">здесь</a>. Перевод является добровольным и безвозмездным. Вам несложно, а мне приятно :)
+
 <center>
 {{< button relref="/docs/lesson_01" >}}Перейти к первому уроку{{< /button >}}
 </center>
