@@ -78,7 +78,7 @@ def callback_inline(call):
             bot.edit_message_text(inline_message_id=call.inline_message_id, text="Бдыщь")
 
 if __name__ == '__main__':
-    bot.polling(none_stop=True)
+    bot.infinity_polling()
 {{< /highlight >}}
 
 Запускаем бота, отправляем инлайн-сообщение, которое, в свою очередь, вызовет обычное:

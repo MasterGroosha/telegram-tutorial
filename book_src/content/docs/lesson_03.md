@@ -88,7 +88,7 @@ def check_answer(message):
 if __name__ == '__main__':
     utils.count_rows()
     random.seed()
-    bot.polling(none_stop=True)
+    bot.infinity_polling()
 {{< /highlight >}}
 
 Собственно, всё! Исходные коды можно посмотреть [вот тут](https://github.com/MasterGroosha/telegram-tutorial). Если будете брать исходники, не забудьте проверить импорты (убрать в некоторых местах lesson_01 или lesson_02, например)

@@ -61,4 +61,4 @@ def find_file_ids(message):
 if __name__ == '__main__':
     utils.count_rows()
     random.seed()
-    bot.polling(none_stop=True)
+    bot.infinity_polling()

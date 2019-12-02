@@ -28,4 +28,4 @@ def cmd_yesorno(message):
 if __name__ == '__main__':
     global strings
     strings = ['Да', 'Нет']
-    bot.polling(none_stop=True)
+    bot.infinity_polling()
