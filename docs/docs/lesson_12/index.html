@@ -74,7 +74,7 @@ if __name__ == '__main__':
         'server.ssl_private_key': WEBHOOK_SSL_PRIV,
         'engine.autoreload.on': False
     })
-    cherrypy.quickstart(WebhookServer(), '/', {'/': {}})</code></pre><h3 id=-1>Подготавливаем ботов</h3><p>Создадим их две штуки, каждый из которых будет на команду <strong>/start</strong> представляться по своему номеру.<br>Первый бот:</p><pre><code class=language-none data-lang=none>#!/usr/bin/env python3
+    cherrypy.quickstart(WebhookServer(), '/', {'/': {}})</code></pre><h3 id=--1>Подготавливаем ботов</h3><p>Создадим их две штуки, каждый из которых будет на команду <strong>/start</strong> представляться по своему номеру.<br>Первый бот:</p><pre><code class=language-none data-lang=none>#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import cherrypy
@@ -133,5 +133,5 @@ if __name__ == '__main__':
             proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header   X-Forwarded-Host $server_name;
         }
-    }</code></pre><p>Сохраняем файл конфигурации и перезапускаем службу: <code>sudo service nginx reload</code>.
-Единственное, что надо изменить в самих ботах - это добавить <code>bot.remove_webhook()</code> и <code>bot.set_webhook("https://(адрес вашего сервера)/хххх)</code>, где xxxx в нашем случае либо AAAA, либо ZZZZ, при этом параметр <code>certificate</code> в методе <code>set_webhook</code> уже не нужен, т.к. сертификат не самоподписанный.</p><a href=/telegram-tutorial/docs/lesson_11/ class=book-btn style=float:left>← Урок №11</a></article></div><aside class="book-toc level-3 fixed"><nav id=TableOfContents><ul><li><a href=#heading>Введение</a></li><li><a href=#--cherrypy--->Вариант первый: CherryPy и самоподписанные сертификаты</a><ul><li><a href=#->Подготавливаем «роутер»</a></li><li><a href=#-1>Подготавливаем ботов</a></li></ul></li><li><a href=#--nginx--lets-encrypt>Вариант второй: nginx и Let's Encrypt</a><ul><li><a href=#---lets-encrypt>Получаем сертификат от Let's Encrypt</a></li><li><a href=#-nginx>Настраиваем nginx</a></li></ul></li></ul></nav></aside></main></body></html>
+    }</code></pre><p>Обратите внимание на слэши после номера порта (7771/ и 7772/), их наличие очень важно. Далее сохраняем файл конфигурации и перезапускаем службу: <code>sudo service nginx reload</code>.
+Единственное, что надо изменить в самих ботах - это добавить <code>bot.remove_webhook()</code> и <code>bot.set_webhook("https://(адрес вашего сервера)/хххх)</code>, где xxxx в нашем случае либо AAAA, либо ZZZZ, при этом параметр <code>certificate</code> в методе <code>set_webhook</code> уже не нужен, т.к. сертификат не самоподписанный.</p><a href=/telegram-tutorial/docs/lesson_11/ class=book-btn style=float:left>← Урок №11</a></article></div><aside class="book-toc level-3 fixed"><nav id=TableOfContents><ul><li><a href=#heading>Введение</a></li><li><a href=#--cherrypy--->Вариант первый: CherryPy и самоподписанные сертификаты</a><ul><li><a href=#->Подготавливаем «роутер»</a></li><li><a href=#--1>Подготавливаем ботов</a></li></ul></li><li><a href=#--nginx--lets-encrypt>Вариант второй: nginx и Let's Encrypt</a><ul><li><a href=#---lets-encrypt>Получаем сертификат от Let's Encrypt</a></li><li><a href=#-nginx>Настраиваем nginx</a></li></ul></li></ul></nav></aside></main></body></html>
