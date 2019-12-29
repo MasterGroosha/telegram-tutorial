@@ -2,6 +2,7 @@
 headless: true
 ---
 
+- [Урок 0. Подготовка рабочего места в Windows и Linux. Virtual Environment (venv). Ответы на вопросы]({{< relref "/docs/lesson_00" >}})
 - [Урок 1. Введение, простой echo-бот]({{< relref "/docs/lesson_01" >}})
 - [Урок 2. “Угадай мелодию”. Подготовка]({{< relref "/docs/lesson_02" >}})
 - [Урок 3. “Угадай мелодию”. Завершаем бота]({{< relref "/docs/lesson_03" >}})
