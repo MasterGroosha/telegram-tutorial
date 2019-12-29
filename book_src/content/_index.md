@@ -16,5 +16,5 @@ BookToC: false
 Поблагодарить автора (материально) можно [здесь](https://money.yandex.ru/to/41001515922197). Перевод является добровольным и безвозмездным. Вам несложно, а мне приятно :)
 
 <center>
-{{< button relref="/docs/lesson_01" >}}Перейти к первому уроку{{< /button >}}
+{{< button relref="/docs/lesson_00" >}}Настроить рабочее окружение{{< /button >}} {{< button relref="/docs/lesson_01" >}}Перейти к первому уроку{{< /button >}}
 </center>
