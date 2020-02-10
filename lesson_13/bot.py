@@ -79,16 +79,6 @@ async def just_poll_answer(active_quiz: types.Poll):
             del quizzes_database[quiz_owner][num]
 
 
-# Old
-# @dp.message_handler(commands=["start"])
-# async def cmd_start(message: types.Message):
-#     poll_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-#     poll_keyboard.add(types.KeyboardButton(text="Создать викторину",
-#                                            request_poll=types.KeyboardButtonPollType(type=types.PollType.QUIZ)))
-#     poll_keyboard.add(types.KeyboardButton(text="Отмена"))
-#     await message.answer("Нажмите на кнопку ниже и создайте викторину!", reply_markup=poll_keyboard)
-
-
 @dp.message_handler(commands=["start"])
 async def cmd_start(message: types.Message):
     if message.chat.type == types.ChatType.PRIVATE:
