@@ -8,7 +8,7 @@ import telebot
 from time import sleep
 
 # Каждый раз получаем по 10 последних записей со стены
-URL_VK = 'https://api.vk.com/method/wall.get?domain=c.music&count=10&filter=owner'
+URL_VK = 'https://api.vk.com/method/wall.get?domain=c.music&count=10&filter=owner&v=5.68'
 FILENAME_VK = 'last_known_id.txt'
 BASE_POST_URL = 'https://vk.com/wall-39270586_'
 
