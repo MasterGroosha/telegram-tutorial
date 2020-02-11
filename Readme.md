@@ -15,6 +15,7 @@
 [Урок 10. Bot API v3. Автоматизируем работу в группах](http://mastergroosha.github.io/telegram-tutorial/docs/lesson_10/)  
 [Урок 11. Ведём (более-менее) осмысленные диалоги. Конечные автоматы](http://mastergroosha.github.io/telegram-tutorial/docs/lesson_11/)  
 [Урок 12. Запускаем несколько ботов на одном сервере](http://mastergroosha.github.io/telegram-tutorial/docs/lesson_12/)  
+[Урок 13. Опросы v2.0](http://mastergroosha.github.io/telegram-tutorial/docs/lesson_13/)  
 
 Вдобавок к текстам программ, в репозитории с июня 2019 года располагаются исходники учебника, который хостится здесь же, на Github Pages, и собирается при помощи фреймворка [Hugo](https://gohugo.io)
 
