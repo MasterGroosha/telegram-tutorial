@@ -199,3 +199,4 @@ server {
 Единственное, что надо изменить в самих ботах - это добавить `bot.remove_webhook()` и `bot.set_webhook("https://(адрес вашего сервера)/хххх)`, где xxxx в нашем случае либо AAAA, либо ZZZZ, при этом параметр `certificate` в методе `set_webhook` уже не нужен, т.к. сертификат не самоподписанный.
 
 {{< btn_left relref="/docs/lesson_11" >}}Урок №11{{< /btn_left >}}
+{{< btn_right relref="/docs/lesson_13" >}}Урок №13{{< /btn_right >}}
