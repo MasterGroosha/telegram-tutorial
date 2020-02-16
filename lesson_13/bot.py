@@ -33,7 +33,7 @@ async def handle_poll_answer(quiz_answer: types.PollAnswer):
     """
     quiz_owner = quizzes_owners.get(quiz_answer.poll_id)
     if not quiz_owner:
-        logging.error(f"Не могу найти автора викторины с {quiz_answer.poll_id=}")
+        logging.error(f"Не могу найти автора викторины с quiz_answer.poll_id = {quiz_answer.poll_id}")
         return
     for saved_quiz in quizzes_database[quiz_owner]:
         if saved_quiz.quiz_id == quiz_answer.poll_id:
@@ -62,7 +62,7 @@ async def just_poll_answer(active_quiz: types.Poll):
     """
     quiz_owner = quizzes_owners.get(active_quiz.id)
     if not quiz_owner:
-        logging.error(f"Не могу найти автора викторины с {active_quiz.id=}")
+        logging.error(f"Не могу найти автора викторины с active_quiz.id = {active_quiz.id}")
         return
     for num, saved_quiz in enumerate(quizzes_database[quiz_owner]):
         if saved_quiz.quiz_id == active_quiz.id:
