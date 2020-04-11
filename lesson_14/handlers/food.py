@@ -27,7 +27,7 @@ async def food_step_1(message: types.Message):
 
 
 @dp.message_handler(state=OrderFood.waiting_for_food_name, content_types=types.ContentTypes.TEXT)
-async def food_step_2(message: types.Message, state: FSMContext):
+async def food_step_2(message: types.Message, state: FSMContext):  # обратите внимание, есть второй аргумент
     if message.text.lower() not in available_food_names:
         await message.reply("Пожалуйста, выберите блюдо, используя клавиатуру ниже.")
         return
