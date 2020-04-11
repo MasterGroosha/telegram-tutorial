@@ -178,3 +178,4 @@ quizzes_owners = {}  # здесь хранятся пары "id викторин
 На этом всё! Если у вас возникли вопросы, не стесняйтесь задавать их в [нашем чатике](https://t.me/joinchat/ABtnIE7H7Q3TRRh8n8uNww), а если вы нашли ошибку/опечатку, либо есть чем дополнить материал, то добро пожаловать на [GitHub](https://github.com/MasterGroosha/telegram-tutorial/issues) (ну, или всё так же в чате). Полный код урока можно найти [здесь](https://github.com/MasterGroosha/telegram-tutorial/tree/master/lesson_13).
 
 {{< btn_left relref="/docs/lesson_12" >}}Урок №12{{< /btn_left >}}
+{{< btn_right relref="/docs/lesson_14" >}}Урок №14{{< /btn_right >}}
