@@ -10,6 +10,10 @@
   flex: 1 1;
 }
 
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
 .justify-start {
   justify-content: flex-start;
 }
@@ -34,20 +38,33 @@
   margin: 0 auto;
 }
 
+.text-center {
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+@mixin spin($duration) {
+  animation: spin $duration ease infinite;
+  @keyframes spin {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}
+
 @mixin fixed {
   position: fixed;
   top: 0;
   bottom: 0;
   overflow-x: hidden;
   overflow-y: auto;
-}
-
-@mixin dark-links {
-  a {
-    color: $color-dark-link;
-  }
-
-  a.active {
-    color: $color-link;
-  }
 }

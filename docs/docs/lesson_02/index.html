@@ -1,108 +1,115 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Урок 2. “Угадай мелодию”. Подготовка
-| Пишем ботов для Telegram на языке Python</title><link rel=stylesheet href=/test-web/css/override.css><link rel=stylesheet href=/telegram-tutorial/book.min.b7d5ee4f671b06dde5fd61ab409a54048ba7759e99fed39ac32a7be45d4d92cd.css><meta property=og:title content="Пишем ботов для Telegram на языке Python"><meta property=og:image content=https://telegram.org/file/811140058/2/7GzMJk4Ij54/a1649c56fa9f805828><meta property=og:description content="Урок 2. “Угадай мелодию”. Подготовка"><link rel=icon href=/telegram-tutorial/favicon.png type=image/x-icon></head><body><input type=checkbox style=display:none id=menu-control><main class="flex container"><aside class="book-menu fixed"><nav><h2 class=book-brand><a href=https://mastergroosha.github.io/telegram-tutorial/>Пишем ботов для Telegram на языке Python</a></h2><style>nav ul a[href$=\2ftelegram-tutorial\2f docs\2flesson_02\2f ]{color:#004ed0}</style><ul><li><a href=/telegram-tutorial/docs/lesson_00/>Урок 0. Подготовка рабочего места в Windows и Linux. Virtual Environment (venv). Ответы на вопросы</a></li><li><a href=/telegram-tutorial/docs/lesson_01/>Урок 1. Введение, простой echo-бот</a></li><li><a href=/telegram-tutorial/docs/lesson_02/>Урок 2. “Угадай мелодию”. Подготовка</a></li><li><a href=/telegram-tutorial/docs/lesson_03/>Урок 3. “Угадай мелодию”. Завершаем бота</a></li><li><a href=/telegram-tutorial/docs/lesson_04/>Урок 4. Вебхуки</a></li><li><a href=/telegram-tutorial/docs/lesson_05/>Урок 5. Автопостинг в каналы</a></li><li><a href=/telegram-tutorial/docs/lesson_06/>Урок 6. Собираем аналитику при помощи Botan</a></li><li><a href=/telegram-tutorial/docs/lesson_07/>Урок 7. Встраиваемые боты (Inline)</a></li><li><a href=/telegram-tutorial/docs/lesson_08/>Урок 8. Bot API v2: Кнопки и редактирование сообщений</a></li><li><a href=/telegram-tutorial/docs/lesson_09/>Урок 9. Bot API v2: Специальные кнопки, опять редактирование сообщений, кэшированный инлайн</a></li><li><a href=/telegram-tutorial/docs/lesson_10/>Урок 10. Bot API v3. Автоматизируем работу в группах</a></li><li><a href=/telegram-tutorial/docs/lesson_11/>Урок 11. Ведём (более-менее) осмысленные диалоги. Конечные автоматы</a></li><li><a href=/telegram-tutorial/docs/lesson_12/>Урок 12. Запускаем несколько ботов на одном сервере</a></li><li><a href=/telegram-tutorial/docs/lesson_13/>Урок 13. Опросы v2.0</a></li><li><a href=/telegram-tutorial/docs/lesson_14/>Урок 14. Конечные автоматы в aiogram, разбиваем логику по файлам</a></li></ul></nav></aside><div class=book-page><header class="align-center justify-between book-header"><label for=menu-control><img src=/telegram-tutorial/svg/menu.svg alt=Menu></label></header><header class=markdown><h1>Урок 2. “Угадай мелодию”. Подготовка</h1></header><article class=markdown><h2 id=введение>Введение</h2><p>Нашей целью будет создание простой игры из серии &ldquo;Угадай мелодию&rdquo;. В первом уроке мы договорились, что мы делаем прототип, поэтому в том боте, который мы получим, не будет ни таблицы рекордов, ни какой-либо статистики, ни поддержки групповых чатов. Зато мы научимся создавать кастомные клавиатуры, отправлять голосовые заметки и создавать мультишаговые команды.<br>Займёмся подготовкой базы данных для нашего бота.</p><h2 id=учимся-уважать-серверы-telegram>Учимся уважать серверы Telegram</h2><p>Итак, для начала, подготовим аудиофайлы для отправки. Чтобы не усложнять никому жизнь, будем отправлять аудио как голосовые заметки в формате OGG, а не как музыку. Я взял 5 никому не известных песен, сделал из них 15-20-секундные нарезки, сконвертировал в *.ogg и положил в папку &ldquo;music&rdquo;. А теперь делаем финт ушами. Смотрите: мы будем отправлять юзерам одни и те же файлы много-много раз, давайте же побережем свой трафик и дисковое пространство на серверах Telegram, благо в документации написано, что можно отправлять различные объекты не как файлы, а по <code>file_id</code> (если файлы уже предварительно загружены). Прекрасно! Попросим нашего бота прислать нам наши аудиофайлы и их <code>file_id</code>:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none># -*- coding: utf-8 -*-
-import telebot
+<!doctype html><html lang=ru><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="«Угадай мелодию». Подготовка"><meta name=theme-color content="#FFFFFF"><meta property="og:title" content="Пишем ботов для Telegram на языке Python"><meta property="og:type" content="article"><meta property="og:description" content="Урок 2: «Угадай мелодию». Подготовка"><meta property="og:url" content="https://mastergroosha.github.io/telegram-tutorial/docs/lesson_02/"><meta property="og:site_name" content="Пишем ботов для Telegram на языке Python"><meta property="og:image" content="https://mastergroosha.github.io/telegram-tutorial/bot_logo.png"><title>Урок 2: «Угадай мелодию». Подготовка | Пишем ботов для Telegram на языке Python</title><link rel=manifest href=/telegram-tutorial/manifest.json><link rel=icon href=/telegram-tutorial/favicon.png type=image/x-icon><link rel=stylesheet href=/telegram-tutorial/book.min.6df681b0bb21155cba49f6078e3559216772d8e03e780d240c73ea21817ed5e5.css integrity="sha256-bfaBsLshFVy6SfYHjjVZIWdy2OA+eA0kDHPqIYF+1eU="></head><body><input type=checkbox class=hidden id=menu-control><main class="container flex"><aside class=book-menu><nav><h2 class=book-brand><a href=/telegram-tutorial><span>Пишем ботов для Telegram на языке Python</span></a></h2><ul><li class=book-section-flat><span>pyTelegramBotAPI</span><ul><li><a href=/telegram-tutorial/docs/pyTelegramBotAPI/lesson_00/>Урок 0. Подготовка рабочего места в Windows и Linux. Virtual Environment (venv). Ответы на вопросы</a></li><li><a href=/telegram-tutorial/docs/lesson_01/>Урок 1. Введение, простой echo-бот</a></li><li><a href=/telegram-tutorial/docs/lesson_02/ class=active>Урок 2. «Угадай мелодию». Подготовка</a></li><li><a href=/telegram-tutorial/docs/lesson_03/>Урок 3. «Угадай мелодию». Завершаем бота</a></li><li><a href=/telegram-tutorial/docs/lesson_04/>Урок 4. Вебхуки</a></li><li><a href=/telegram-tutorial/docs/lesson_05/>Урок 5. Автопостинг в каналы</a></li><li><a href=/telegram-tutorial/docs/lesson_06/>Урок 6. Собираем аналитику при помощи Botan (неактуально)</a></li><li><a href=/telegram-tutorial/docs/lesson_07/>Урок 7. Встраиваемые боты (Inline)</a></li><li><a href=/telegram-tutorial/docs/lesson_08/>Урок 8. Bot API v2: Кнопки и редактирование сообщений</a></li><li><a href=/telegram-tutorial/docs/lesson_09/>Урок 9. Bot API v2: Специальные кнопки, опять редактирование сообщений, кэшированный инлайн</a></li><li><a href=/telegram-tutorial/docs/lesson_10/>Урок 10. Bot API v3. Автоматизируем работу в группах</a></li><li><a href=/telegram-tutorial/docs/lesson_11/>Урок 11. Ведём (более-менее) осмысленные диалоги. Конечные автоматы</a></li><li><a href=/telegram-tutorial/docs/lesson_12/>Урок 12. Запускаем несколько ботов на одном сервере</a></li></ul></li><li class=book-section-flat><span>aiogram</span><ul><li><a href=/telegram-tutorial/docs/lesson_13/>Урок 13. Опросы v2.0</a></li><li><a href=/telegram-tutorial/docs/lesson_14/>Урок 14. Конечные автоматы в aiogram, разбиваем логику по файлам</a></li></ul></li></ul><ul><li><a href=/telegram-tutorial/posts/></a></li></ul></nav><script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script></aside><div class=book-page><header class=book-header><div class="flex align-center justify-between"><label for=menu-control><img src=/telegram-tutorial/svg/menu.svg class=book-icon alt=Menu></label>
+<strong>Урок 2</strong>
+<label for=toc-control><img src=/telegram-tutorial/svg/toc.svg class=book-icon alt="Table of Contents"></label></div><input type=checkbox class=hidden id=toc-control><aside class="hidden clearfix"><nav id=TableOfContents><ul><li><ul><li><a href=#введение>Введение</a></li><li><a href=#учимся-уважать-серверы-telegram>Учимся уважать серверы Telegram</a></li><li><a href=#база-приём>База, приём!</a></li><li><a href=#хранилище>Хранилище</a></li></ul></li></ul></nav></aside></header><article class=markdown><h1>«Угадай мелодию». Подготовка</h1><p><h2 id=введение>Введение</h2><p>Нашей целью будет создание простой игры из серии &ldquo;Угадай мелодию&rdquo;. В первом уроке мы договорились, что мы делаем прототип, поэтому в том боте, который мы получим, не будет ни таблицы рекордов, ни какой-либо статистики, ни поддержки групповых чатов. Зато мы научимся создавать кастомные клавиатуры, отправлять голосовые заметки и создавать мультишаговые команды.<br>Займёмся подготовкой базы данных для нашего бота.</p><h2 id=учимся-уважать-серверы-telegram>Учимся уважать серверы Telegram</h2><p>Итак, для начала, подготовим аудиофайлы для отправки. Чтобы не усложнять никому жизнь, будем отправлять аудио как голосовые заметки в формате OGG, а не как музыку. Я взял 5 никому не известных песен, сделал из них 15-20-секундные нарезки, сконвертировал в *.ogg и положил в папку &ldquo;music&rdquo;. А теперь делаем финт ушами. Смотрите: мы будем отправлять юзерам одни и те же файлы много-много раз, давайте же побережем свой трафик и дисковое пространство на серверах Telegram, благо в документации написано, что можно отправлять различные объекты не как файлы, а по <code>file_id</code> (если файлы уже предварительно загружены). Прекрасно! Попросим нашего бота прислать нам наши аудиофайлы и их <code>file_id</code>:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:green># -*- coding: utf-8 -*-</span>
+<span style=color:#00f>import</span> telebot
 
 bot = telebot.TeleBot(config.token)
 
-@bot.message_handler(commands=[&#39;test&#39;])
-def find_file_ids(message):
-    for file in os.listdir(&#39;music/&#39;):
-        if file.split(&#39;.&#39;)[-1] == &#39;ogg&#39;:
-            f = open(&#39;music/&#39;+file, &#39;rb&#39;)
+@bot.message_handler(commands=[<span style=color:#a31515>&#39;test&#39;</span>])
+<span style=color:#00f>def</span> find_file_ids(message):
+    <span style=color:#00f>for</span> file <span style=color:#00f>in</span> os.listdir(<span style=color:#a31515>&#39;music/&#39;</span>):
+        <span style=color:#00f>if</span> file.split(<span style=color:#a31515>&#39;.&#39;</span>)[-1] == <span style=color:#a31515>&#39;ogg&#39;</span>:
+            f = open(<span style=color:#a31515>&#39;music/&#39;</span>+file, <span style=color:#a31515>&#39;rb&#39;</span>)
             msg = bot.send_voice(message.chat.id, f, None)
-            # А теперь отправим вслед за файлом его file_id
+            <span style=color:green># А теперь отправим вслед за файлом его file_id</span>
             bot.send_message(message.chat.id, msg.voice.file_id, reply_to_message_id=msg.message_id)
         time.sleep(3)
 
 
-if __name__ == &#39;__main__&#39;:
-    bot.infinity_polling()</code></pre></div><p><strong>Обратите внимание</strong>, в последней строке мы больше не используем бесконечный цикл While, из-за изменений в используемой библиотеке. В данном случае по команде /test бот будет отправлять наши файлы вместе с их file_id. Записываем эти file_id куда-нибудь.</p><p><strong>ВАЖНО</strong>!: Идентификаторы <code>file_id</code> уникальны для каждого бота по отдельности! То есть, если Вы хотите, чтобы бот А сохранил <code>file_id</code> файла Х, то именно этому боту и надо отправлять файлы. Если Вы попробуете воспользоваться для этого ботом B, идентификаторы станут невалидны.</p><p><strong>ВАЖНО 2</strong>: При отправке медиафайлов большого размера вы можете столкнуться с ошибкой <code>ConnectionError: ('Connection aborted.', timeout('The write operation timed out',))</code>. Чтобы её избежать, при вызове методов для медиа <code>send_audio</code>, <code>send_video</code> и остальных аргумент <code>timeout=ЧИСЛО</code>, где значение ЧИСЛО укажите в соответствии с вашими потребностями (например, 5, 10 или что-то ещё, в зависимости от размера файла)</p><h2 id=база-приём>База, приём!</h2><p>Раз уж мы имеем дело с перманентными данными, нам нужно где-то их хранить. В стандартной библиотеке Python есть 2 чудесных способа: при помощи БД <strong>SQLite3</strong> и при помощи хранилищ типа &ldquo;ключ-значение&rdquo; <strong>shelve</strong>. Будем использовать оба варианта. Начнём с БД. Здесь и далее под &ldquo;БД&rdquo; или &ldquo;Базой Данных&rdquo; я буду понимать именно SQLite3, а под словом &ldquo;хранилище&rdquo; - shelve. Итак, при помощи бесплатной Windows-утилиты DB Browser for SQLite я создал базу данных с одной-единственной таблицей music и заполнил её сведениями о моих аудиофайлах. Чтобы была понятна примерная структура БД, посмотрите на скриншот:</p><p><center><figure style="padding:.25rem;margin:1rem 0"><img style=max-width:100%;height:auto src=/telegram-tutorial/images/l2_1.jpg alt="Структура БД"><figcaption><h4><i>Структура БД</i></h4></figcaption></figure></center></p><p>Столбец <code>file_id</code> содержит идентификатор аудиозаписи, <code>right_answer</code> и <code>wrong_answer</code> - правильный и неправильные ответы соответственно. Для чего мне нужно это разделение, объясню позднее. Итак, наша тестовая база создана, при помощи команды экспорт я сгенерировал файл с чудесным названием <code>tttt.sql</code> следующего содержания:</p><p><center><figure style="padding:.25rem;margin:1rem 0"><img style=max-width:100%;height:auto src=/telegram-tutorial/images/l2_2.jpg alt="SQL-код БД"><figcaption><h4><i>SQL-код БД</i></h4></figcaption></figure></center></p><p>Затем я залил этот файл на свой Linux-сервер, в терминале которого выполнил команду <code>sqlite3 music.db &lt; tttt.sql</code>, которая привела к созданию файла music.db, являющимся базой данных наших аудиозаписей.<br>Теперь создадим файл <code>SQLighter.py</code>. Т.к. Python изначально объектно-ориентированный язык, мне захотелось оформить работу с БД в виде класса. Пусть умные люди меня поправят, если я что-то сделал не так. Вот как выглядит наш класс:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none># -*- coding: utf-8 -*-
-import sqlite3
+<span style=color:#00f>if</span> __name__ == <span style=color:#a31515>&#39;__main__&#39;</span>:
+    bot.infinity_polling()
+</code></pre></div><p><strong>Обратите внимание</strong>, в последней строке мы больше не используем бесконечный цикл While, из-за изменений в используемой библиотеке. В данном случае по команде /test бот будет отправлять наши файлы вместе с их file_id. Записываем эти file_id куда-нибудь.</p><p><strong>ВАЖНО</strong>!: Идентификаторы <code>file_id</code> уникальны для каждого бота по отдельности! То есть, если Вы хотите, чтобы бот А сохранил <code>file_id</code> файла Х, то именно этому боту и надо отправлять файлы. Если Вы попробуете воспользоваться для этого ботом B, идентификаторы станут невалидны.</p><p><strong>ВАЖНО 2</strong>: При отправке медиафайлов большого размера вы можете столкнуться с ошибкой <code>ConnectionError: ('Connection aborted.', timeout('The write operation timed out',))</code>. Чтобы её избежать, при вызове методов для медиа <code>send_audio</code>, <code>send_video</code> и остальных аргумент <code>timeout=ЧИСЛО</code>, где значение ЧИСЛО укажите в соответствии с вашими потребностями (например, 5, 10 или что-то ещё, в зависимости от размера файла)</p><h2 id=база-приём>База, приём!</h2><p>Раз уж мы имеем дело с перманентными данными, нам нужно где-то их хранить. В стандартной библиотеке Python есть 2 чудесных способа: при помощи БД <strong>SQLite3</strong> и при помощи хранилищ типа &ldquo;ключ-значение&rdquo; <strong>shelve</strong>. Будем использовать оба варианта. Начнём с БД. Здесь и далее под &ldquo;БД&rdquo; или &ldquo;Базой Данных&rdquo; я буду понимать именно SQLite3, а под словом &ldquo;хранилище&rdquo; - shelve. Итак, при помощи бесплатной Windows-утилиты DB Browser for SQLite я создал базу данных с одной-единственной таблицей music и заполнил её сведениями о моих аудиофайлах. Чтобы была понятна примерная структура БД, посмотрите на скриншот:</p><center><img src=https://mastergroosha.github.io/telegram-tutorial//images/l2_1.jpg></center>
+<center><i>Структура БД</i></center><p>Столбец <code>file_id</code> содержит идентификатор аудиозаписи, <code>right_answer</code> и <code>wrong_answer</code> - правильный и неправильные ответы соответственно. Для чего мне нужно это разделение, объясню позднее. Итак, наша тестовая база создана, при помощи команды экспорт я сгенерировал файл с чудесным названием <code>tttt.sql</code> следующего содержания:</p><center><img src=https://mastergroosha.github.io/telegram-tutorial//images/l2_2.jpg></center>
+<center><i>SQL-код БД</i></center><p>Затем я залил этот файл на свой Linux-сервер, в терминале которого выполнил команду <code>sqlite3 music.db &lt; tttt.sql</code>, которая привела к созданию файла music.db, являющимся базой данных наших аудиозаписей.<br>Теперь создадим файл <code>SQLighter.py</code>. Т.к. Python изначально объектно-ориентированный язык, мне захотелось оформить работу с БД в виде класса. Пусть умные люди меня поправят, если я что-то сделал не так. Вот как выглядит наш класс:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:green># -*- coding: utf-8 -*-</span>
+<span style=color:#00f>import</span> sqlite3
 
-class SQLighter:
+<span style=color:#00f>class</span> <span style=color:#2b91af>SQLighter</span>:
 
-    def __init__(self, database):
+    <span style=color:#00f>def</span> __init__(self, database):
         self.connection = sqlite3.connect(database)
         self.cursor = self.connection.cursor()
 
-    def select_all(self):
-        &#34;&#34;&#34; Получаем все строки &#34;&#34;&#34;
-        with self.connection:
-            return self.cursor.execute(&#39;SELECT * FROM music&#39;).fetchall()
+    <span style=color:#00f>def</span> select_all(self):
+        <span style=color:#a31515>&#34;&#34;&#34; Получаем все строки &#34;&#34;&#34;</span>
+        <span style=color:#00f>with</span> self.connection:
+            <span style=color:#00f>return</span> self.cursor.execute(<span style=color:#a31515>&#39;SELECT * FROM music&#39;</span>).fetchall()
 
-    def select_single(self, rownum):
-        &#34;&#34;&#34; Получаем одну строку с номером rownum &#34;&#34;&#34;
-        with self.connection:
-            return self.cursor.execute(&#39;SELECT * FROM music WHERE id = ?&#39;, (rownum,)).fetchall()[0]
+    <span style=color:#00f>def</span> select_single(self, rownum):
+        <span style=color:#a31515>&#34;&#34;&#34; Получаем одну строку с номером rownum &#34;&#34;&#34;</span>
+        <span style=color:#00f>with</span> self.connection:
+            <span style=color:#00f>return</span> self.cursor.execute(<span style=color:#a31515>&#39;SELECT * FROM music WHERE id = ?&#39;</span>, (rownum,)).fetchall()[0]
 
-    def count_rows(self):
-        &#34;&#34;&#34; Считаем количество строк &#34;&#34;&#34;
-        with self.connection:
-            result = self.cursor.execute(&#39;SELECT * FROM music&#39;).fetchall()
-            return len(result)
+    <span style=color:#00f>def</span> count_rows(self):
+        <span style=color:#a31515>&#34;&#34;&#34; Считаем количество строк &#34;&#34;&#34;</span>
+        <span style=color:#00f>with</span> self.connection:
+            result = self.cursor.execute(<span style=color:#a31515>&#39;SELECT * FROM music&#39;</span>).fetchall()
+            <span style=color:#00f>return</span> len(result)
 
-    def close(self):
-        &#34;&#34;&#34; Закрываем текущее соединение с БД &#34;&#34;&#34;
-        self.connection.close()</code></pre></div><p>При каждом создании объекта SQLighter будет открываться отдельное соединение с БД и впоследствии закрываться. Мне кажется, это правильный подход, тем более, что бот изначально многопоточный (особенность библиотеки).</p><h2 id=хранилище>Хранилище</h2><p>Наверняка у кого-то возникнет справедливый вопрос: &ldquo;А зачем нам нужно простое хранилище, если у нас уже есть полноценная база данных?&rdquo;. Ответ: я просто не хочу лишний раз дёргать БД.</p><p>Идея с key-value хранилищем ложится здесь идеально. В чём состоит моя идея: когда юзер начинает игру, вместе с вопросом я сохраняю себе правильный ответ, и при выборе ответа пользователем я сравниваю его ответ с правильным. Совпало - молодец. Не совпало - не молодец. Затем запись удаляется из хранилища, чтобы не занимать лишнее место.</p><p>Создадим файл <code>utils.py</code>, в котором опишем методы для сохранения правильного ответа, удаления правильного ответа, получения правильного ответа (или None, если юзер решил просто так что-то написать боту) и сохранении количества строк в основной БД. Количество строк будет пересчитываться при каждом запуске бота, тем самым, нам не надо думать, по какому правилу выбирать вопросы.</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none># -*- coding: utf-8 -*-
-import shelve
-from SQLighter import SQLighter
-from config import shelve_name, database_name
+    <span style=color:#00f>def</span> close(self):
+        <span style=color:#a31515>&#34;&#34;&#34; Закрываем текущее соединение с БД &#34;&#34;&#34;</span>
+        self.connection.close()
+</code></pre></div><p>При каждом создании объекта SQLighter будет открываться отдельное соединение с БД и впоследствии закрываться. Мне кажется, это правильный подход, тем более, что бот изначально многопоточный (особенность библиотеки).</p><h2 id=хранилище>Хранилище</h2><p>Наверняка у кого-то возникнет справедливый вопрос: &ldquo;А зачем нам нужно простое хранилище, если у нас уже есть полноценная база данных?". Ответ: я просто не хочу лишний раз дёргать БД.</p><p>Идея с key-value хранилищем ложится здесь идеально. В чём состоит моя идея: когда юзер начинает игру, вместе с вопросом я сохраняю себе правильный ответ, и при выборе ответа пользователем я сравниваю его ответ с правильным. Совпало - молодец. Не совпало - не молодец. Затем запись удаляется из хранилища, чтобы не занимать лишнее место.</p><p>Создадим файл <code>utils.py</code>, в котором опишем методы для сохранения правильного ответа, удаления правильного ответа, получения правильного ответа (или None, если юзер решил просто так что-то написать боту) и сохранении количества строк в основной БД. Количество строк будет пересчитываться при каждом запуске бота, тем самым, нам не надо думать, по какому правилу выбирать вопросы.</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:green># -*- coding: utf-8 -*-</span>
+<span style=color:#00f>import</span> shelve
+<span style=color:#00f>from</span> SQLighter <span style=color:#00f>import</span> SQLighter
+<span style=color:#00f>from</span> config <span style=color:#00f>import</span> shelve_name, database_name
 
-def count_rows():
-    &#34;&#34;&#34;
-    Данный метод считает общее количество строк в базе данных и сохраняет в хранилище.
-    Потом из этого количества будем выбирать музыку.
-    &#34;&#34;&#34;
+<span style=color:#00f>def</span> count_rows():
+    <span style=color:#a31515>&#34;&#34;&#34;
+</span><span style=color:#a31515>    Данный метод считает общее количество строк в базе данных и сохраняет в хранилище.
+</span><span style=color:#a31515>    Потом из этого количества будем выбирать музыку.
+</span><span style=color:#a31515>    &#34;&#34;&#34;</span>
     db = SQLighter(database_name)
     rowsnum = db.count_rows()
-    with shelve.open(shelve_name) as storage:
-        storage[&#39;rows_count&#39;] = rowsnum
+    <span style=color:#00f>with</span> shelve.open(shelve_name) <span style=color:#00f>as</span> storage:
+        storage[<span style=color:#a31515>&#39;rows_count&#39;</span>] = rowsnum
 
 
-def get_rows_count():
-    &#34;&#34;&#34;
-    Получает из хранилища количество строк в БД
-     (int) Число строк
-    &#34;&#34;&#34;
-    with shelve.open(shelve_name) as storage:
-        rowsnum = storage[&#39;rows_count&#39;]
-    return rowsnum
+<span style=color:#00f>def</span> get_rows_count():
+    <span style=color:#a31515>&#34;&#34;&#34;
+</span><span style=color:#a31515>    Получает из хранилища количество строк в БД
+</span><span style=color:#a31515>    :return: (int) Число строк
+</span><span style=color:#a31515>    &#34;&#34;&#34;</span>
+    <span style=color:#00f>with</span> shelve.open(shelve_name) <span style=color:#00f>as</span> storage:
+        rowsnum = storage[<span style=color:#a31515>&#39;rows_count&#39;</span>]
+    <span style=color:#00f>return</span> rowsnum
 
 
-def set_user_game(chat_id, estimated_answer):
-    &#34;&#34;&#34;
-    Записываем юзера в игроки и запоминаем, что он должен ответить.
-    :param chat_id: id юзера
-    :param estimated_answer: правильный ответ (из БД)
-    &#34;&#34;&#34;
-    with shelve.open(shelve_name) as storage:
+<span style=color:#00f>def</span> set_user_game(chat_id, estimated_answer):
+    <span style=color:#a31515>&#34;&#34;&#34;
+</span><span style=color:#a31515>    Записываем юзера в игроки и запоминаем, что он должен ответить.
+</span><span style=color:#a31515>    :param chat_id: id юзера
+</span><span style=color:#a31515>    :param estimated_answer: правильный ответ (из БД)
+</span><span style=color:#a31515>    &#34;&#34;&#34;</span>
+    <span style=color:#00f>with</span> shelve.open(shelve_name) <span style=color:#00f>as</span> storage:
         storage[str(chat_id)] = estimated_answer
 
 
-def finish_user_game(chat_id):
-    &#34;&#34;&#34;
-    Заканчиваем игру текущего пользователя и удаляем правильный ответ из хранилища
-    :param chat_id: id юзера
-    &#34;&#34;&#34;
-    with shelve.open(shelve_name) as storage:
-        del storage[str(chat_id)]
+<span style=color:#00f>def</span> finish_user_game(chat_id):
+    <span style=color:#a31515>&#34;&#34;&#34;
+</span><span style=color:#a31515>    Заканчиваем игру текущего пользователя и удаляем правильный ответ из хранилища
+</span><span style=color:#a31515>    :param chat_id: id юзера
+</span><span style=color:#a31515>    &#34;&#34;&#34;</span>
+    <span style=color:#00f>with</span> shelve.open(shelve_name) <span style=color:#00f>as</span> storage:
+        <span style=color:#00f>del</span> storage[str(chat_id)]
 
 
-def get_answer_for_user(chat_id):
-    &#34;&#34;&#34;
-    Получаем правильный ответ для текущего юзера.
-    В случае, если человек просто ввёл какие-то символы, не начав игру, возвращаем None
-    :param chat_id: id юзера
-     (str) Правильный ответ / None
-    &#34;&#34;&#34;
-    with shelve.open(shelve_name) as storage:
-        try:
+<span style=color:#00f>def</span> get_answer_for_user(chat_id):
+    <span style=color:#a31515>&#34;&#34;&#34;
+</span><span style=color:#a31515>    Получаем правильный ответ для текущего юзера.
+</span><span style=color:#a31515>    В случае, если человек просто ввёл какие-то символы, не начав игру, возвращаем None
+</span><span style=color:#a31515>    :param chat_id: id юзера
+</span><span style=color:#a31515>    :return: (str) Правильный ответ / None
+</span><span style=color:#a31515>    &#34;&#34;&#34;</span>
+    <span style=color:#00f>with</span> shelve.open(shelve_name) <span style=color:#00f>as</span> storage:
+        <span style=color:#00f>try</span>:
             answer = storage[str(chat_id)]
-            return answer
-        # Если человек не играет, ничего не возвращаем
-        except KeyError:
-            return None</code></pre></div><p>Не вижу смысла подробно комментировать данный код, поясню лишь использование ключевого слова <code>with</code>: оно позволяет не заморачиваться о закрытии хранилища, Python сам возьмет на себя управление. Подробнее можно прочесть в <a href=https://docs.python.org/3/reference/compound_stmts.html#the-with-statement>официальной документации</a>.<br>Ах да, и не забудьте создать файл <code>config.py</code>, содержащий следующие строки:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none># -*- coding: utf-8 -*-
-token = &#39;YOUR_TOKEN&#39;  # Токен бота
-database_name = &#39;music.db&#39;  # Файл с базой данных
-shelve_name = &#39;shelve.db&#39;  # Файл с хранилищем</code></pre></div><p>На следующем занятии мы закончим нашего бота-угадайку.</p><p><a href=/telegram-tutorial/docs/lesson_01/ class=book-btn style=float:left>← Урок №1</a>
-<a href=/telegram-tutorial/docs/lesson_03/ class=book-btn style=float:right>Урок №3 →</a></p></article></div><aside class="book-toc level-3 fixed"><nav id=TableOfContents><ul><li><ul><li><a href=#введение>Введение</a></li><li><a href=#учимся-уважать-серверы-telegram>Учимся уважать серверы Telegram</a></li><li><a href=#база-приём>База, приём!</a></li><li><a href=#хранилище>Хранилище</a></li></ul></li></ul></nav></aside></main></body></html>
+            <span style=color:#00f>return</span> answer
+        <span style=color:green># Если человек не играет, ничего не возвращаем</span>
+        <span style=color:#00f>except</span> KeyError:
+            <span style=color:#00f>return</span> None
+</code></pre></div><p>Не вижу смысла подробно комментировать данный код, поясню лишь использование ключевого слова <code>with</code>: оно позволяет не заморачиваться о закрытии хранилища, Python сам возьмет на себя управление. Подробнее можно прочесть в <a href=https://docs.python.org/3/reference/compound_stmts.html#the-with-statement>официальной документации</a>.<br>Ах да, и не забудьте создать файл <code>config.py</code>, содержащий следующие строки:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:green># -*- coding: utf-8 -*-</span>
+token = <span style=color:#a31515>&#39;YOUR_TOKEN&#39;</span>  <span style=color:green># Токен бота</span>
+database_name = <span style=color:#a31515>&#39;music.db&#39;</span>  <span style=color:green># Файл с базой данных</span>
+shelve_name = <span style=color:#a31515>&#39;shelve.db&#39;</span>  <span style=color:green># Файл с хранилищем</span>
+</code></pre></div><p>На следующем занятии мы закончим нашего бота-угадайку.</p><p><a href=/telegram-tutorial/docs/lesson_01/ class=book-btn style=float:left>← Урок №1</a>
+<a href=/telegram-tutorial/docs/lesson_03/ class=book-btn style=float:right>Урок №3 →</a></p></p></article><footer class=book-footer><div class="flex flex-wrap justify-between"></div></footer><label for=menu-control class="hidden book-menu-overlay"></label></div><aside class=book-toc><nav id=TableOfContents><ul><li><ul><li><a href=#введение>Введение</a></li><li><a href=#учимся-уважать-серверы-telegram>Учимся уважать серверы Telegram</a></li><li><a href=#база-приём>База, приём!</a></li><li><a href=#хранилище>Хранилище</a></li></ul></li></ul></nav></aside></main></body></html>

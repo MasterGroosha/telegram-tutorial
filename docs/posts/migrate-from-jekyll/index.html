@@ -1,0 +1,94 @@
+<!doctype html><html lang=ru><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Move static content to static Jekyll has a rule that any directory not starting with _ will be copied as-is to the _site output. Hugo keeps all static content under static. You should therefore move it all there. With Jekyll, something that looked like
+▾ <root>/▾ images/logo.png should become
+▾ <root>/▾ static/▾ images/logo.png Additionally, you&rsquo;ll want any files that should reside at the root (such as CNAME) to be moved to static."><meta name=theme-color content="#FFFFFF"><meta property="og:title" content="Пишем ботов для Telegram на языке Python"><meta property="og:type" content="article"><meta property="og:description" content="Migrate to Hugo from Jekyll:"><meta property="og:url" content="https://mastergroosha.github.io/telegram-tutorial/posts/migrate-from-jekyll/"><meta property="og:site_name" content="Пишем ботов для Telegram на языке Python"><meta property="og:image" content="https://mastergroosha.github.io/telegram-tutorial/bot_logo.png"><title>Migrate to Hugo from Jekyll: | Пишем ботов для Telegram на языке Python</title><link rel=manifest href=/telegram-tutorial/manifest.json><link rel=icon href=/telegram-tutorial/favicon.png type=image/x-icon><link rel=stylesheet href=/telegram-tutorial/book.min.6df681b0bb21155cba49f6078e3559216772d8e03e780d240c73ea21817ed5e5.css integrity="sha256-bfaBsLshFVy6SfYHjjVZIWdy2OA+eA0kDHPqIYF+1eU="></head><body><input type=checkbox class=hidden id=menu-control><main class="container flex"><aside class=book-menu><nav><h2 class=book-brand><a href=/telegram-tutorial><span>Пишем ботов для Telegram на языке Python</span></a></h2><ul><li class=book-section-flat><span>pyTelegramBotAPI</span><ul><li><a href=/telegram-tutorial/docs/pyTelegramBotAPI/lesson_00/>Урок 0. Подготовка рабочего места в Windows и Linux. Virtual Environment (venv). Ответы на вопросы</a></li><li><a href=/telegram-tutorial/docs/lesson_01/>Урок 1. Введение, простой echo-бот</a></li><li><a href=/telegram-tutorial/docs/lesson_02/>Урок 2. «Угадай мелодию». Подготовка</a></li><li><a href=/telegram-tutorial/docs/lesson_03/>Урок 3. «Угадай мелодию». Завершаем бота</a></li><li><a href=/telegram-tutorial/docs/lesson_04/>Урок 4. Вебхуки</a></li><li><a href=/telegram-tutorial/docs/lesson_05/>Урок 5. Автопостинг в каналы</a></li><li><a href=/telegram-tutorial/docs/lesson_06/>Урок 6. Собираем аналитику при помощи Botan (неактуально)</a></li><li><a href=/telegram-tutorial/docs/lesson_07/>Урок 7. Встраиваемые боты (Inline)</a></li><li><a href=/telegram-tutorial/docs/lesson_08/>Урок 8. Bot API v2: Кнопки и редактирование сообщений</a></li><li><a href=/telegram-tutorial/docs/lesson_09/>Урок 9. Bot API v2: Специальные кнопки, опять редактирование сообщений, кэшированный инлайн</a></li><li><a href=/telegram-tutorial/docs/lesson_10/>Урок 10. Bot API v3. Автоматизируем работу в группах</a></li><li><a href=/telegram-tutorial/docs/lesson_11/>Урок 11. Ведём (более-менее) осмысленные диалоги. Конечные автоматы</a></li><li><a href=/telegram-tutorial/docs/lesson_12/>Урок 12. Запускаем несколько ботов на одном сервере</a></li></ul></li><li class=book-section-flat><span>aiogram</span><ul><li><a href=/telegram-tutorial/docs/lesson_13/>Урок 13. Опросы v2.0</a></li><li><a href=/telegram-tutorial/docs/lesson_14/>Урок 14. Конечные автоматы в aiogram, разбиваем логику по файлам</a></li></ul></li></ul><ul><li><a href=/telegram-tutorial/posts/></a></li></ul></nav><script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script></aside><div class=book-page><header class=book-header><div class="flex align-center justify-between"><label for=menu-control><img src=/telegram-tutorial/svg/menu.svg class=book-icon alt=Menu></label>
+<strong>Migrate to Hugo from Jekyll</strong>
+<label for=toc-control><img src=/telegram-tutorial/svg/toc.svg class=book-icon alt="Table of Contents"></label></div><input type=checkbox class=hidden id=toc-control><aside class="hidden clearfix"><nav id=TableOfContents><ul><li><ul><li><a href=#move-static-content-to-static>Move static content to <code>static</code></a></li><li><a href=#create-your-hugo-configuration-file>Create your Hugo configuration file</a></li><li><a href=#set-your-configuration-publish-folder-to-_site>Set your configuration publish folder to <code>_site</code></a></li><li><a href=#convert-jekyll-templates-to-hugo-templates>Convert Jekyll templates to Hugo templates</a></li><li><a href=#convert-jekyll-plugins-to-hugo-shortcodes>Convert Jekyll plugins to Hugo shortcodes</a><ul><li><a href=#implementation>Implementation</a></li><li><a href=#usage>Usage</a></li></ul></li><li><a href=#finishing-touches>Finishing touches</a><ul><li><a href=#fix-content>Fix content</a></li><li><a href=#clean-up>Clean up</a></li></ul></li><li><a href=#a-practical-example-in-a-diff>A practical example in a diff</a></li></ul></li></ul></nav></aside></header><article class=markdown><h1><a href=/telegram-tutorial/posts/migrate-from-jekyll/>Migrate to Hugo from Jekyll</a></h1><h5>10 Mar. 2014</h5><p><h2 id=move-static-content-to-static>Move static content to <code>static</code></h2><p>Jekyll has a rule that any directory not starting with <code>_</code> will be copied as-is to the <code>_site</code> output. Hugo keeps all static content under <code>static</code>. You should therefore move it all there.
+With Jekyll, something that looked like</p><pre><code>▾ &lt;root&gt;/
+    ▾ images/
+        logo.png
+</code></pre><p>should become</p><pre><code>▾ &lt;root&gt;/
+    ▾ static/
+        ▾ images/
+            logo.png
+</code></pre><p>Additionally, you&rsquo;ll want any files that should reside at the root (such as <code>CNAME</code>) to be moved to <code>static</code>.</p><h2 id=create-your-hugo-configuration-file>Create your Hugo configuration file</h2><p>Hugo can read your configuration as JSON, YAML or TOML. Hugo supports parameters custom configuration too. Refer to the <a href=/overview/configuration/>Hugo configuration documentation</a> for details.</p><h2 id=set-your-configuration-publish-folder-to-_site>Set your configuration publish folder to <code>_site</code></h2><p>The default is for Jekyll to publish to <code>_site</code> and for Hugo to publish to <code>public</code>. If, like me, you have <a href=http://blog.blindgaenger.net/generate_github_pages_in_a_submodule.html><code>_site</code> mapped to a git submodule on the <code>gh-pages</code> branch</a>, you&rsquo;ll want to do one of two alternatives:</p><ol><li><p>Change your submodule to point to map <code>gh-pages</code> to public instead of <code>_site</code> (recommended).</p><pre><code> git submodule deinit _site
+ git rm _site
+ git submodule add -b gh-pages git@github.com:your-username/your-repo.git public
+</code></pre></li><li><p>Or, change the Hugo configuration to use <code>_site</code> instead of <code>public</code>.</p><pre><code> {
+     ..
+     &quot;publishdir&quot;: &quot;_site&quot;,
+     ..
+ }
+</code></pre></li></ol><h2 id=convert-jekyll-templates-to-hugo-templates>Convert Jekyll templates to Hugo templates</h2><p>That&rsquo;s the bulk of the work right here. The documentation is your friend. You should refer to <a href=http://jekyllrb.com/docs/templates/>Jekyll&rsquo;s template documentation</a> if you need to refresh your memory on how you built your blog and <a href=/layout/templates/>Hugo&rsquo;s template</a> to learn Hugo&rsquo;s way.</p><p>As a single reference data point, converting my templates for <a href=http://heyitsalex.net/>heyitsalex.net</a> took me no more than a few hours.</p><h2 id=convert-jekyll-plugins-to-hugo-shortcodes>Convert Jekyll plugins to Hugo shortcodes</h2><p>Jekyll has <a href=http://jekyllrb.com/docs/plugins/>plugins</a>; Hugo has <a href=/doc/shortcodes/>shortcodes</a>. It&rsquo;s fairly trivial to do a port.</p><h3 id=implementation>Implementation</h3><p>As an example, I was using a custom <a href=https://github.com/alexandre-normand/alexandre-normand/blob/74bb12036a71334fdb7dba84e073382fc06908ec/_plugins/image_tag.rb><code>image_tag</code></a> plugin to generate figures with caption when running Jekyll. As I read about shortcodes, I found Hugo had a nice built-in shortcode that does exactly the same thing.</p><p>Jekyll&rsquo;s plugin:</p><pre><code>module Jekyll
+  class ImageTag &lt; Liquid::Tag
+    @url = nil
+    @caption = nil
+    @class = nil
+    @link = nil
+    // Patterns
+    IMAGE_URL_WITH_CLASS_AND_CAPTION =
+    IMAGE_URL_WITH_CLASS_AND_CAPTION_AND_LINK = /(\w+)(\s+)((https?:\/\/|\/)(\S+))(\s+)&quot;(.*?)&quot;(\s+)-&gt;((https?:\/\/|\/)(\S+))(\s*)/i
+    IMAGE_URL_WITH_CAPTION = /((https?:\/\/|\/)(\S+))(\s+)&quot;(.*?)&quot;/i
+    IMAGE_URL_WITH_CLASS = /(\w+)(\s+)((https?:\/\/|\/)(\S+))/i
+    IMAGE_URL = /((https?:\/\/|\/)(\S+))/i
+    def initialize(tag_name, markup, tokens)
+      super
+      if markup =~ IMAGE_URL_WITH_CLASS_AND_CAPTION_AND_LINK
+        @class   = $1
+        @url     = $3
+        @caption = $7
+        @link = $9
+      elsif markup =~ IMAGE_URL_WITH_CLASS_AND_CAPTION
+        @class   = $1
+        @url     = $3
+        @caption = $7
+      elsif markup =~ IMAGE_URL_WITH_CAPTION
+        @url     = $1
+        @caption = $5
+      elsif markup =~ IMAGE_URL_WITH_CLASS
+        @class = $1
+        @url   = $3
+      elsif markup =~ IMAGE_URL
+        @url = $1
+      end
+    end
+    def render(context)
+      if @class
+        source = &quot;&lt;figure class='#{@class}'&gt;&quot;
+      else
+        source = &quot;&lt;figure&gt;&quot;
+      end
+      if @link
+        source += &quot;&lt;a href=\&quot;#{@link}\&quot;&gt;&quot;
+      end
+      source += &quot;&lt;img src=\&quot;#{@url}\&quot;&gt;&quot;
+      if @link
+        source += &quot;&lt;/a&gt;&quot;
+      end
+      source += &quot;&lt;figcaption&gt;#{@caption}&lt;/figcaption&gt;&quot; if @caption
+      source += &quot;&lt;/figure&gt;&quot;
+      source
+    end
+  end
+end
+Liquid::Template.register_tag('image', Jekyll::ImageTag)
+</code></pre><p>is written as this Hugo shortcode:</p><pre><code>&lt;!-- image --&gt;
+&lt;figure {{ with .Get &quot;class&quot; }}class=&quot;{{.}}&quot;{{ end }}&gt;
+    {{ with .Get &quot;link&quot;}}&lt;a href=&quot;{{.}}&quot;&gt;{{ end }}
+        &lt;img src=&quot;{{ .Get &quot;src&quot; }}&quot; {{ if or (.Get &quot;alt&quot;) (.Get &quot;caption&quot;) }}alt=&quot;{{ with .Get &quot;alt&quot;}}{{.}}{{else}}{{ .Get &quot;caption&quot; }}{{ end }}&quot;{{ end }} /&gt;
+    {{ if .Get &quot;link&quot;}}&lt;/a&gt;{{ end }}
+    {{ if or (or (.Get &quot;title&quot;) (.Get &quot;caption&quot;)) (.Get &quot;attr&quot;)}}
+    &lt;figcaption&gt;{{ if isset .Params &quot;title&quot; }}
+        {{ .Get &quot;title&quot; }}{{ end }}
+        {{ if or (.Get &quot;caption&quot;) (.Get &quot;attr&quot;)}}&lt;p&gt;
+        {{ .Get &quot;caption&quot; }}
+        {{ with .Get &quot;attrlink&quot;}}&lt;a href=&quot;{{.}}&quot;&gt; {{ end }}
+            {{ .Get &quot;attr&quot; }}
+        {{ if .Get &quot;attrlink&quot;}}&lt;/a&gt; {{ end }}
+        &lt;/p&gt; {{ end }}
+    &lt;/figcaption&gt;
+    {{ end }}
+&lt;/figure&gt;
+&lt;!-- image --&gt;
+</code></pre><h3 id=usage>Usage</h3><p>I simply changed:</p><pre><code>{% image full http://farm5.staticflickr.com/4136/4829260124_57712e570a_o_d.jpg &quot;One of my favorite touristy-type photos. I secretly waited for the good light while we were &quot;having fun&quot; and took this. Only regret: a stupid pole in the top-left corner of the frame I had to clumsily get rid of at post-processing.&quot; -&gt;http://www.flickr.com/photos/alexnormand/4829260124/in/set-72157624547713078/ %}
+</code></pre><p>to this (this example uses a slightly extended version named <code>fig</code>, different than the built-in <code>figure</code>):</p><pre><code>{{% fig class=&quot;full&quot; src=&quot;http://farm5.staticflickr.com/4136/4829260124_57712e570a_o_d.jpg&quot; title=&quot;One of my favorite touristy-type photos. I secretly waited for the good light while we were having fun and took this. Only regret: a stupid pole in the top-left corner of the frame I had to clumsily get rid of at post-processing.&quot; link=&quot;http://www.flickr.com/photos/alexnormand/4829260124/in/set-72157624547713078/&quot; %}}
+</code></pre><p>As a bonus, the shortcode named parameters are, arguably, more readable.</p><h2 id=finishing-touches>Finishing touches</h2><h3 id=fix-content>Fix content</h3><p>Depending on the amount of customization that was done with each post with Jekyll, this step will require more or less effort. There are no hard and fast rules here except that <code>hugo server --watch</code> is your friend. Test your changes and fix errors as needed.</p><h3 id=clean-up>Clean up</h3><p>You&rsquo;ll want to remove the Jekyll configuration at this point. If you have anything else that isn&rsquo;t used, delete it.</p><h2 id=a-practical-example-in-a-diff>A practical example in a diff</h2><p><a href=http://heyitsalex.net/>Hey, it&rsquo;s Alex</a> was migrated in less than a <em>father-with-kids day</em> from Jekyll to Hugo. You can see all the changes (and screw-ups) by looking at this <a href=https://github.com/alexandre-normand/alexandre-normand/compare/869d69435bd2665c3fbf5b5c78d4c22759d7613a...b7f6605b1265e83b4b81495423294208cc74d610>diff</a>.</p></p></article><footer class=book-footer><div class="flex flex-wrap justify-between"></div></footer><label for=menu-control class="hidden book-menu-overlay"></label></div><aside class=book-toc><nav id=TableOfContents><ul><li><ul><li><a href=#move-static-content-to-static>Move static content to <code>static</code></a></li><li><a href=#create-your-hugo-configuration-file>Create your Hugo configuration file</a></li><li><a href=#set-your-configuration-publish-folder-to-_site>Set your configuration publish folder to <code>_site</code></a></li><li><a href=#convert-jekyll-templates-to-hugo-templates>Convert Jekyll templates to Hugo templates</a></li><li><a href=#convert-jekyll-plugins-to-hugo-shortcodes>Convert Jekyll plugins to Hugo shortcodes</a><ul><li><a href=#implementation>Implementation</a></li><li><a href=#usage>Usage</a></li></ul></li><li><a href=#finishing-touches>Finishing touches</a><ul><li><a href=#fix-content>Fix content</a></li><li><a href=#clean-up>Clean up</a></li></ul></li><li><a href=#a-practical-example-in-a-diff>A practical example in a diff</a></li></ul></li></ul></nav></aside></main></body></html>

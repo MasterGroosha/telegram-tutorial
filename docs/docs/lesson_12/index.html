@@ -1,111 +1,115 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Урок 12. Запускаем несколько ботов на одном сервере
-| Пишем ботов для Telegram на языке Python</title><link rel=stylesheet href=/test-web/css/override.css><link rel=stylesheet href=/telegram-tutorial/book.min.b7d5ee4f671b06dde5fd61ab409a54048ba7759e99fed39ac32a7be45d4d92cd.css><meta property=og:title content="Пишем ботов для Telegram на языке Python"><meta property=og:image content=https://telegram.org/file/811140058/2/7GzMJk4Ij54/a1649c56fa9f805828><meta property=og:description content="Урок 12. Запускаем несколько ботов на одном сервере"><link rel=icon href=/telegram-tutorial/favicon.png type=image/x-icon></head><body><input type=checkbox style=display:none id=menu-control><main class="flex container"><aside class="book-menu fixed"><nav><h2 class=book-brand><a href=https://mastergroosha.github.io/telegram-tutorial/>Пишем ботов для Telegram на языке Python</a></h2><style>nav ul a[href$=\2ftelegram-tutorial\2f docs\2flesson_12\2f ]{color:#004ed0}</style><ul><li><a href=/telegram-tutorial/docs/lesson_00/>Урок 0. Подготовка рабочего места в Windows и Linux. Virtual Environment (venv). Ответы на вопросы</a></li><li><a href=/telegram-tutorial/docs/lesson_01/>Урок 1. Введение, простой echo-бот</a></li><li><a href=/telegram-tutorial/docs/lesson_02/>Урок 2. “Угадай мелодию”. Подготовка</a></li><li><a href=/telegram-tutorial/docs/lesson_03/>Урок 3. “Угадай мелодию”. Завершаем бота</a></li><li><a href=/telegram-tutorial/docs/lesson_04/>Урок 4. Вебхуки</a></li><li><a href=/telegram-tutorial/docs/lesson_05/>Урок 5. Автопостинг в каналы</a></li><li><a href=/telegram-tutorial/docs/lesson_06/>Урок 6. Собираем аналитику при помощи Botan</a></li><li><a href=/telegram-tutorial/docs/lesson_07/>Урок 7. Встраиваемые боты (Inline)</a></li><li><a href=/telegram-tutorial/docs/lesson_08/>Урок 8. Bot API v2: Кнопки и редактирование сообщений</a></li><li><a href=/telegram-tutorial/docs/lesson_09/>Урок 9. Bot API v2: Специальные кнопки, опять редактирование сообщений, кэшированный инлайн</a></li><li><a href=/telegram-tutorial/docs/lesson_10/>Урок 10. Bot API v3. Автоматизируем работу в группах</a></li><li><a href=/telegram-tutorial/docs/lesson_11/>Урок 11. Ведём (более-менее) осмысленные диалоги. Конечные автоматы</a></li><li><a href=/telegram-tutorial/docs/lesson_12/>Урок 12. Запускаем несколько ботов на одном сервере</a></li><li><a href=/telegram-tutorial/docs/lesson_13/>Урок 13. Опросы v2.0</a></li><li><a href=/telegram-tutorial/docs/lesson_14/>Урок 14. Конечные автоматы в aiogram, разбиваем логику по файлам</a></li></ul></nav></aside><div class=book-page><header class="align-center justify-between book-header"><label for=menu-control><img src=/telegram-tutorial/svg/menu.svg alt=Menu></label></header><header class=markdown><h1>Урок 12. Запускаем несколько ботов на одном сервере</h1></header><article class=markdown><h2 id=введение>Введение</h2><div class=book-expand><label><div class="book-expand-head flex justify-between"><span>Для тех, у кого дежавю</span>
-<span>↕</span></div><input type=checkbox style=display:none><div class="book-expand-content markdown-inner">Если вам вдруг кажется, что нижеприведённый текст вы уже где-то видели, то вы не ошиблись: материал был когда-то давно разбит на две части и располагался в секции «Дополнительные материалы».</div></label></div><p>По моему мнению (а оно может не совпадать с вашим), боты на вебхуках надёжнее ботов, использующих поллинг.<br>Связано это в первую очередь с моими воспоминаниями из августа-сентября 2015 года, когда каждую ночь падали боты из-за Gateway Timeout&rsquo;ов. Затем в Bot API добавили поддержку самоподписанных сертификатов и я начал использовать их, благо это бесплатно.<br>В <a href=/telegram-tutorial/docs/lesson_04/>уроке номер четыре</a> я писал, что т.к. портов для использования вебхуков всего 4, то, казалось бы, можно на одной машине запустить всего четырёх ботов, и что есть решение этой проблемы. Вот об этом сейчас и пойдет речь. Я планирую разбить материал на две части: в первой мы научимся запускать сколько угодно ботов при помощи одних лишь серверов <a href=http://www.cherrypy.org>CherryPy</a> и самоподписанных сертификатов, во второй же вместо основного веб-сервера поставим <a href=http://nginx.org/ru>nginx</a>, а вместо самоподписанных сертификатов – бесплатные от <a href=https://letsencrypt.org>Let&rsquo;s Encrypt</a>.</p><h2 id=вариант-первый-cherrypy-и-самоподписанные-сертификаты>Вариант первый: CherryPy и самоподписанные сертификаты</h2><p>Общая схема взаимодействия Telegram и наших ботов в первом варианте будет выглядеть следующим образом:</p><p><center><figure style="padding:.25rem;margin:1rem 0"><img style=max-width:100%;height:auto src=/telegram-tutorial/images/l12_1.jpg alt="Общая схема взаимодействия"><figcaption><h4><i>Общая схема взаимодействия</i></h4></figcaption></figure></center></p><h3 id=подготавливаем-роутер>Подготавливаем «роутер»</h3><p>Давайте для начала создадим наш &ldquo;роутер&rdquo;, то есть, сервер CherryPy, который будет принимать все сообщения и раскидывать их по нужным ботам. Условимся также, что наш сервер будет иметь IP 122.122.122.122 и вебхуки от первого бота будут приходить на адрес <a href=https://122.122.122.122/AAAA>https://122.122.122.122/AAAA</a>, а от второго на <a href=https://122.122.122.122/ZZZZ>https://122.122.122.122/ZZZZ</a>. Предполагается, что вы уже прочитали <a href=/telegram-tutorial/docs/lesson_04/>урок №4</a> и структура вебхук-ботов вас не пугает.</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none>#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+<!doctype html><html lang=ru><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Запускаем несколько ботов на одном сервере"><meta name=theme-color content="#FFFFFF"><meta property="og:title" content="Пишем ботов для Telegram на языке Python"><meta property="og:type" content="article"><meta property="og:description" content="Урок 12: Запускаем несколько ботов на одном сервере"><meta property="og:url" content="https://mastergroosha.github.io/telegram-tutorial/docs/lesson_12/"><meta property="og:site_name" content="Пишем ботов для Telegram на языке Python"><meta property="og:image" content="https://mastergroosha.github.io/telegram-tutorial/bot_logo.png"><title>Урок 12: Запускаем несколько ботов на одном сервере | Пишем ботов для Telegram на языке Python</title><link rel=manifest href=/telegram-tutorial/manifest.json><link rel=icon href=/telegram-tutorial/favicon.png type=image/x-icon><link rel=stylesheet href=/telegram-tutorial/book.min.6df681b0bb21155cba49f6078e3559216772d8e03e780d240c73ea21817ed5e5.css integrity="sha256-bfaBsLshFVy6SfYHjjVZIWdy2OA+eA0kDHPqIYF+1eU="></head><body><input type=checkbox class=hidden id=menu-control><main class="container flex"><aside class=book-menu><nav><h2 class=book-brand><a href=/telegram-tutorial><span>Пишем ботов для Telegram на языке Python</span></a></h2><ul><li class=book-section-flat><span>pyTelegramBotAPI</span><ul><li><a href=/telegram-tutorial/docs/pyTelegramBotAPI/lesson_00/>Урок 0. Подготовка рабочего места в Windows и Linux. Virtual Environment (venv). Ответы на вопросы</a></li><li><a href=/telegram-tutorial/docs/lesson_01/>Урок 1. Введение, простой echo-бот</a></li><li><a href=/telegram-tutorial/docs/lesson_02/>Урок 2. «Угадай мелодию». Подготовка</a></li><li><a href=/telegram-tutorial/docs/lesson_03/>Урок 3. «Угадай мелодию». Завершаем бота</a></li><li><a href=/telegram-tutorial/docs/lesson_04/>Урок 4. Вебхуки</a></li><li><a href=/telegram-tutorial/docs/lesson_05/>Урок 5. Автопостинг в каналы</a></li><li><a href=/telegram-tutorial/docs/lesson_06/>Урок 6. Собираем аналитику при помощи Botan (неактуально)</a></li><li><a href=/telegram-tutorial/docs/lesson_07/>Урок 7. Встраиваемые боты (Inline)</a></li><li><a href=/telegram-tutorial/docs/lesson_08/>Урок 8. Bot API v2: Кнопки и редактирование сообщений</a></li><li><a href=/telegram-tutorial/docs/lesson_09/>Урок 9. Bot API v2: Специальные кнопки, опять редактирование сообщений, кэшированный инлайн</a></li><li><a href=/telegram-tutorial/docs/lesson_10/>Урок 10. Bot API v3. Автоматизируем работу в группах</a></li><li><a href=/telegram-tutorial/docs/lesson_11/>Урок 11. Ведём (более-менее) осмысленные диалоги. Конечные автоматы</a></li><li><a href=/telegram-tutorial/docs/lesson_12/ class=active>Урок 12. Запускаем несколько ботов на одном сервере</a></li></ul></li><li class=book-section-flat><span>aiogram</span><ul><li><a href=/telegram-tutorial/docs/lesson_13/>Урок 13. Опросы v2.0</a></li><li><a href=/telegram-tutorial/docs/lesson_14/>Урок 14. Конечные автоматы в aiogram, разбиваем логику по файлам</a></li></ul></li></ul><ul><li><a href=/telegram-tutorial/posts/></a></li></ul></nav><script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script></aside><div class=book-page><header class=book-header><div class="flex align-center justify-between"><label for=menu-control><img src=/telegram-tutorial/svg/menu.svg class=book-icon alt=Menu></label>
+<strong>Урок 12</strong>
+<label for=toc-control><img src=/telegram-tutorial/svg/toc.svg class=book-icon alt="Table of Contents"></label></div><input type=checkbox class=hidden id=toc-control><aside class="hidden clearfix"><nav id=TableOfContents><ul><li><ul><li><a href=#введение>Введение</a></li><li><a href=#вариант-первый-cherrypy-и-самоподписанные-сертификаты>Вариант первый: CherryPy и самоподписанные сертификаты</a><ul><li><a href=#подготавливаем-роутер>Подготавливаем «роутер»</a></li><li><a href=#подготавливаем-ботов>Подготавливаем ботов</a></li></ul></li><li><a href=#вариант-второй-nginx-и-lets-encrypt>Вариант второй: nginx и Let&rsquo;s Encrypt</a><ul><li><a href=#получаем-сертификат-от-lets-encrypt>Получаем сертификат от Let&rsquo;s Encrypt</a></li><li><a href=#настраиваем-nginx>Настраиваем nginx</a></li></ul></li></ul></li></ul></nav></aside></header><article class=markdown><h1>Запускаем несколько ботов на одном сервере</h1><p><h2 id=введение>Введение</h2><blockquote class="book-hint info">Если вы по какой-то причине всё ещё используете <strong>pyTelegramBotAPI</strong>, то этот урок вам сильно пригодится.<br>Те, кто уже перешёл на что-то другое (например, <strong>aiogram</strong>) могут продолжать использовать поллинг (polling), а на вебхуки переходить только при увеличении количества пользователей и, следовательно, нагрузки.</blockquote><p>По моему мнению (а оно может не совпадать с вашим), боты на вебхуках надёжнее ботов, использующих поллинг.<br>Связано это в первую очередь с моими воспоминаниями из августа-сентября 2015 года, когда каждую ночь падали боты из-за Gateway Timeout&rsquo;ов. Затем в Bot API добавили поддержку самоподписанных сертификатов и я начал использовать их, благо это бесплатно.<br>В <a href=/telegram-tutorial/docs/lesson_04/>уроке номер четыре</a> я писал, что т.к. портов для использования вебхуков всего 4, то, казалось бы, можно на одной машине запустить всего четырёх ботов, и что есть решение этой проблемы. Вот об этом сейчас и пойдет речь. Я планирую разбить материал на две части: в первой мы научимся запускать сколько угодно ботов при помощи одних лишь серверов <a href=http://www.cherrypy.org>CherryPy</a> и самоподписанных сертификатов, во второй же вместо основного веб-сервера поставим <a href=http://nginx.org/ru>nginx</a>, а вместо самоподписанных сертификатов – бесплатные от <a href=https://letsencrypt.org>Let&rsquo;s Encrypt</a>.</p><h2 id=вариант-первый-cherrypy-и-самоподписанные-сертификаты>Вариант первый: CherryPy и самоподписанные сертификаты</h2><p>Общая схема взаимодействия Telegram и наших ботов в первом варианте будет выглядеть следующим образом:</p><center><img src=https://mastergroosha.github.io/telegram-tutorial//images/l12_1.jpg></center>
+<center><i>Общая схема взаимодействия</i></center><h3 id=подготавливаем-роутер>Подготавливаем «роутер»</h3><p>Давайте для начала создадим наш &ldquo;роутер&rdquo;, то есть, сервер CherryPy, который будет принимать все сообщения и раскидывать их по нужным ботам. Условимся также, что наш сервер будет иметь IP 122.122.122.122 и вебхуки от первого бота будут приходить на адрес https://122.122.122.122/AAAA, а от второго на https://122.122.122.122/ZZZZ. Предполагается, что вы уже прочитали <a href=/telegram-tutorial/docs/lesson_04/>урок №4</a> и структура вебхук-ботов вас не пугает.</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:green>#!/usr/bin/env python3</span>
+<span style=color:green># -*- coding: utf-8 -*-</span>
 
-import cherrypy
-import requests
-import telebot
+<span style=color:#00f>import</span> cherrypy
+<span style=color:#00f>import</span> requests
+<span style=color:#00f>import</span> telebot
 
-WEBHOOK_HOST = &#39;Здесь.Ваш.IP.Адрес&#39;
-WEBHOOK_PORT = 443  # 443, 80, 88 или 8443 
-WEBHOOK_LISTEN = &#39;0.0.0.0&#39; # Слушаем отовсюду
-WEBHOOK_SSL_CERT = &#39;webhook_cert.pem&#39;  # Путь к сертификату
-WEBHOOK_SSL_PRIV = &#39;webhook_pkey.pem&#39;  # Путь к закрытому ключу
-WEBHOOK_URL_BASE = &#34;https://{!s}:{!s}&#34;.format(WEBHOOK_HOST, WEBHOOK_PORT)
+WEBHOOK_HOST = <span style=color:#a31515>&#39;Здесь.Ваш.IP.Адрес&#39;</span>
+WEBHOOK_PORT = 443  <span style=color:green># 443, 80, 88 или 8443 </span>
+WEBHOOK_LISTEN = <span style=color:#a31515>&#39;0.0.0.0&#39;</span> <span style=color:green># Слушаем отовсюду</span>
+WEBHOOK_SSL_CERT = <span style=color:#a31515>&#39;webhook_cert.pem&#39;</span>  <span style=color:green># Путь к сертификату</span>
+WEBHOOK_SSL_PRIV = <span style=color:#a31515>&#39;webhook_pkey.pem&#39;</span>  <span style=color:green># Путь к закрытому ключу</span>
+WEBHOOK_URL_BASE = <span style=color:#a31515>&#34;https://{!s}:{!s}&#34;</span>.format(WEBHOOK_HOST, WEBHOOK_PORT)
 
-BOT_1_TOKEN = &#34;Токен первого бота&#34;
-BOT_2_TOKEN = &#34;Токен второго бота&#34;
+BOT_1_TOKEN = <span style=color:#a31515>&#34;Токен первого бота&#34;</span>
+BOT_2_TOKEN = <span style=color:#a31515>&#34;Токен второго бота&#34;</span>
 
-# Вводим здесь IP-адреса и порты, куда перенаправлять входящие запросы.
-# Т.к. всё на одной машине, то используем локалхост + какие-нибудь свободные порты.
-# https в данном случае не нужен, шифровать незачем.
-BOT_1_ADDRESS = &#34;http://127.0.0.1:7771&#34;
-BOT_2_ADDRESS = &#34;http://127.0.0.1:7772&#34;
+<span style=color:green># Вводим здесь IP-адреса и порты, куда перенаправлять входящие запросы.</span>
+<span style=color:green># Т.к. всё на одной машине, то используем локалхост + какие-нибудь свободные порты.</span>
+<span style=color:green># https в данном случае не нужен, шифровать незачем.</span>
+BOT_1_ADDRESS = <span style=color:#a31515>&#34;http://127.0.0.1:7771&#34;</span>
+BOT_2_ADDRESS = <span style=color:#a31515>&#34;http://127.0.0.1:7772&#34;</span>
 
 bot_1 = telebot.TeleBot(BOT_1_TOKEN)
 bot_2 = telebot.TeleBot(BOT_2_TOKEN)
 
-# Описываем наш сервер
-class WebhookServer(object):
+<span style=color:green># Описываем наш сервер</span>
+<span style=color:#00f>class</span> <span style=color:#2b91af>WebhookServer</span>(object):
 
-    # Первый бот (название функции = последняя часть URL вебхука)
+    <span style=color:green># Первый бот (название функции = последняя часть URL вебхука)</span>
     @cherrypy.expose
-    def AAAA(self):
-        if &#39;content-length&#39; in cherrypy.request.headers and \
-           &#39;content-type&#39; in cherrypy.request.headers and \
-           cherrypy.request.headers[&#39;content-type&#39;] == &#39;application/json&#39;:
-            length = int(cherrypy.request.headers[&#39;content-length&#39;])
-            json_string = cherrypy.request.body.read(length).decode(&#34;utf-8&#34;)
-            # Вот эта строчка и пересылает все входящие сообщения на нужного бота
+    <span style=color:#00f>def</span> AAAA(self):
+        <span style=color:#00f>if</span> <span style=color:#a31515>&#39;content-length&#39;</span> <span style=color:#00f>in</span> cherrypy.request.headers <span style=color:#00f>and</span> \
+           <span style=color:#a31515>&#39;content-type&#39;</span> <span style=color:#00f>in</span> cherrypy.request.headers <span style=color:#00f>and</span> \
+           cherrypy.request.headers[<span style=color:#a31515>&#39;content-type&#39;</span>] == <span style=color:#a31515>&#39;application/json&#39;</span>:
+            length = int(cherrypy.request.headers[<span style=color:#a31515>&#39;content-length&#39;</span>])
+            json_string = cherrypy.request.body.read(length).decode(<span style=color:#a31515>&#34;utf-8&#34;</span>)
+            <span style=color:green># Вот эта строчка и пересылает все входящие сообщения на нужного бота</span>
             requests.post(BOT_1_ADDRESS, data=json_string)
-            return &#39;&#39;
-        else:
-            raise cherrypy.HTTPError(403)
+            <span style=color:#00f>return</span> <span style=color:#a31515>&#39;&#39;</span>
+        <span style=color:#00f>else</span>:
+            <span style=color:#00f>raise</span> cherrypy.HTTPError(403)
 
-    # Второй бот (действуем аналогично)
+    <span style=color:green># Второй бот (действуем аналогично)</span>
     @cherrypy.expose
-    def ZZZZ(self):
-        if &#39;content-length&#39; in cherrypy.request.headers and \
-           &#39;content-type&#39; in cherrypy.request.headers and \
-           cherrypy.request.headers[&#39;content-type&#39;] == &#39;application/json&#39;:
-            length = int(cherrypy.request.headers[&#39;content-length&#39;])
-            json_string = cherrypy.request.body.read(length).decode(&#34;utf-8&#34;)
+    <span style=color:#00f>def</span> ZZZZ(self):
+        <span style=color:#00f>if</span> <span style=color:#a31515>&#39;content-length&#39;</span> <span style=color:#00f>in</span> cherrypy.request.headers <span style=color:#00f>and</span> \
+           <span style=color:#a31515>&#39;content-type&#39;</span> <span style=color:#00f>in</span> cherrypy.request.headers <span style=color:#00f>and</span> \
+           cherrypy.request.headers[<span style=color:#a31515>&#39;content-type&#39;</span>] == <span style=color:#a31515>&#39;application/json&#39;</span>:
+            length = int(cherrypy.request.headers[<span style=color:#a31515>&#39;content-length&#39;</span>])
+            json_string = cherrypy.request.body.read(length).decode(<span style=color:#a31515>&#34;utf-8&#34;</span>)
             requests.post(BOT_2_ADDRESS, data=json_string)
-            return &#39;&#39;
-        else:
-            raise cherrypy.HTTPError(403)
+            <span style=color:#00f>return</span> <span style=color:#a31515>&#39;&#39;</span>
+        <span style=color:#00f>else</span>:
+            <span style=color:#00f>raise</span> cherrypy.HTTPError(403)
 
-if __name__ == &#39;__main__&#39;:
+<span style=color:#00f>if</span> __name__ == <span style=color:#a31515>&#39;__main__&#39;</span>:
 
     bot_1.remove_webhook()
-    bot_1.set_webhook(url=&#39;https://122.122.122.122/AAAA&#39;,
-                    certificate=open(WEBHOOK_SSL_CERT, &#39;r&#39;))    
+    bot_1.set_webhook(url=<span style=color:#a31515>&#39;https://122.122.122.122/AAAA&#39;</span>,
+                    certificate=open(WEBHOOK_SSL_CERT, <span style=color:#a31515>&#39;r&#39;</span>))    
 
     bot_2.remove_webhook()
-    bot_2.set_webhook(url=&#39;https://122.122.122.122/ZZZZ&#39;,
-                    certificate=open(WEBHOOK_SSL_CERT, &#39;r&#39;))
+    bot_2.set_webhook(url=<span style=color:#a31515>&#39;https://122.122.122.122/ZZZZ&#39;</span>,
+                    certificate=open(WEBHOOK_SSL_CERT, <span style=color:#a31515>&#39;r&#39;</span>))
 
     cherrypy.config.update({
-        &#39;server.socket_host&#39;: WEBHOOK_LISTEN,
-        &#39;server.socket_port&#39;: WEBHOOK_PORT,
-        &#39;server.ssl_module&#39;: &#39;builtin&#39;,
-        &#39;server.ssl_certificate&#39;: WEBHOOK_SSL_CERT,
-        &#39;server.ssl_private_key&#39;: WEBHOOK_SSL_PRIV,
-        &#39;engine.autoreload.on&#39;: False
+        <span style=color:#a31515>&#39;server.socket_host&#39;</span>: WEBHOOK_LISTEN,
+        <span style=color:#a31515>&#39;server.socket_port&#39;</span>: WEBHOOK_PORT,
+        <span style=color:#a31515>&#39;server.ssl_module&#39;</span>: <span style=color:#a31515>&#39;builtin&#39;</span>,
+        <span style=color:#a31515>&#39;server.ssl_certificate&#39;</span>: WEBHOOK_SSL_CERT,
+        <span style=color:#a31515>&#39;server.ssl_private_key&#39;</span>: WEBHOOK_SSL_PRIV,
+        <span style=color:#a31515>&#39;engine.autoreload.on&#39;</span>: False
     })
-    cherrypy.quickstart(WebhookServer(), &#39;/&#39;, {&#39;/&#39;: {}})</code></pre></div><h3 id=подготавливаем-ботов>Подготавливаем ботов</h3><p>Создадим их две штуки, каждый из которых будет на команду <strong>/start</strong> представляться по своему номеру.<br>Первый бот:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none>#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+    cherrypy.quickstart(WebhookServer(), <span style=color:#a31515>&#39;/&#39;</span>, {<span style=color:#a31515>&#39;/&#39;</span>: {}})
+</code></pre></div><h3 id=подготавливаем-ботов>Подготавливаем ботов</h3><p>Создадим их две штуки, каждый из которых будет на команду <strong>/start</strong> представляться по своему номеру.<br>Первый бот:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:green>#!/usr/bin/env python3</span>
+<span style=color:green># -*- coding: utf-8 -*-</span>
 
-import cherrypy
-import telebot
+<span style=color:#00f>import</span> cherrypy
+<span style=color:#00f>import</span> telebot
 
-BOT_TOKEN = &#34;токен нашего бота&#34;
+BOT_TOKEN = <span style=color:#a31515>&#34;токен нашего бота&#34;</span>
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
-@bot.message_handler(commands=[&#34;start&#34;])
-def command_start(message):
-    bot.send_message(message.chat.id, &#34;Привет! Я бот номер 1&#34;)
+@bot.message_handler(commands=[<span style=color:#a31515>&#34;start&#34;</span>])
+<span style=color:#00f>def</span> command_start(message):
+    bot.send_message(message.chat.id, <span style=color:#a31515>&#34;Привет! Я бот номер 1&#34;</span>)
 
-class WebhookServer(object):
-    # index равнозначно /, т.к. отсутствию части после ip-адреса (грубо говоря)
+<span style=color:#00f>class</span> <span style=color:#2b91af>WebhookServer</span>(object):
+    <span style=color:green># index равнозначно /, т.к. отсутствию части после ip-адреса (грубо говоря)</span>
     @cherrypy.expose
-    def index(self):
-        length = int(cherrypy.request.headers[&#39;content-length&#39;])
-        json_string = cherrypy.request.body.read(length).decode(&#34;utf-8&#34;)
+    <span style=color:#00f>def</span> index(self):
+        length = int(cherrypy.request.headers[<span style=color:#a31515>&#39;content-length&#39;</span>])
+        json_string = cherrypy.request.body.read(length).decode(<span style=color:#a31515>&#34;utf-8&#34;</span>)
         update = telebot.types.Update.de_json(json_string)
         bot.process_new_updates([update])
-        return &#39;&#39;
+        <span style=color:#00f>return</span> <span style=color:#a31515>&#39;&#39;</span>
 
-if __name__ == &#39;__main__&#39;:
+<span style=color:#00f>if</span> __name__ == <span style=color:#a31515>&#39;__main__&#39;</span>:
     cherrypy.config.update({
-        &#39;server.socket_host&#39;: &#39;127.0.0.1&#39;,
-        &#39;server.socket_port&#39;: 7771,
-        &#39;engine.autoreload.on&#39;: False
+        <span style=color:#a31515>&#39;server.socket_host&#39;</span>: <span style=color:#a31515>&#39;127.0.0.1&#39;</span>,
+        <span style=color:#a31515>&#39;server.socket_port&#39;</span>: 7771,
+        <span style=color:#a31515>&#39;engine.autoreload.on&#39;</span>: False
     })
-    cherrypy.quickstart(WebhookServer(), &#39;/&#39;, {&#39;/&#39;: {}})</code></pre></div><p>Второй делается аналогично, только ставим порт 7772 и меняем сообщение по команде <strong>/start</strong>.
-Запускаем &ldquo;роутер&rdquo;, запускаем ботов. Если мы всё сделали правильно, то при создании чата с первым ботом, сначала вебхук получит &ldquo;роутер&rdquo;, перешлет его первому серверу, который отправит сообщение непосредственно в Telegram, в точности так же, как на схеме выше.</p><h2 id=вариант-второй-nginx-и-let-s-encrypt>Вариант второй: nginx и Let&rsquo;s Encrypt</h2><p>Этот подход мне лично кажется более правильным и современным. Веб-сервер nginx используется крупнейшими мировыми веб-сайтами, а Let&rsquo;s Encrypt предлагает бесплатные и доверенные сертификаты.</p><p>Общая схема взаимодействия Telegram и наших ботов во втором варианте будет выглядеть следующим образом:</p><p><center><figure style="padding:.25rem;margin:1rem 0"><img style=max-width:100%;height:auto src=/telegram-tutorial/images/l12_2.jpg alt="Общая схема взаимодействия"><figcaption><h4><i>Общая схема взаимодействия</i></h4></figcaption></figure></center></p><h3 id=получаем-сертификат-от-let-s-encrypt>Получаем сертификат от Let&rsquo;s Encrypt</h3><p>Используйте официальную утилиту <a href=https://certbot.eff.org>certbot</a> для получения сертификата. Укажите свою почту и доменное имя вашего сервера (просто IP-адрес не подойдет). Обратите внимание на дату окончания действия сертификата! Каждые 90 дней его надо обновлять (данный процесс легко автоматизируется).</p><h3 id=настраиваем-nginx>Настраиваем nginx</h3><p>Скачиваем и устанавливаем веб-сервер nginx любым удобным для вас способом и открываем <code>nginx.conf</code> в каталоге <code>/etc/nginx</code>. Внутри блока <code>http {}</code> создаем блок <code>server{}</code> и заполняем его следующим образом (все основные параметры совпадают с аналогичными из первого варианта):</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-none data-lang=none>server {
+    cherrypy.quickstart(WebhookServer(), <span style=color:#a31515>&#39;/&#39;</span>, {<span style=color:#a31515>&#39;/&#39;</span>: {}})
+</code></pre></div><p>Второй делается аналогично, только ставим порт 7772 и меняем сообщение по команде <strong>/start</strong>.
+Запускаем &ldquo;роутер&rdquo;, запускаем ботов. Если мы всё сделали правильно, то при создании чата с первым ботом, сначала вебхук получит &ldquo;роутер&rdquo;, перешлет его первому серверу, который отправит сообщение непосредственно в Telegram, в точности так же, как на схеме выше.</p><h2 id=вариант-второй-nginx-и-lets-encrypt>Вариант второй: nginx и Let&rsquo;s Encrypt</h2><p>Этот подход мне лично кажется более правильным и современным. Веб-сервер nginx используется крупнейшими мировыми веб-сайтами, а Let&rsquo;s Encrypt предлагает бесплатные и доверенные сертификаты.</p><p>Общая схема взаимодействия Telegram и наших ботов во втором варианте будет выглядеть следующим образом:</p><center><img src=https://mastergroosha.github.io/telegram-tutorial//images/l12_2.jpg></center>
+<center><i>Общая схема взаимодействия</i></center><h3 id=получаем-сертификат-от-lets-encrypt>Получаем сертификат от Let&rsquo;s Encrypt</h3><p>Используйте официальную утилиту <a href=https://certbot.eff.org>certbot</a> для получения сертификата. Укажите свою почту и доменное имя вашего сервера (просто IP-адрес не подойдет). Обратите внимание на дату окончания действия сертификата! Каждые 90 дней его надо обновлять (данный процесс легко автоматизируется).</p><h3 id=настраиваем-nginx>Настраиваем nginx</h3><p>Скачиваем и устанавливаем веб-сервер nginx любым удобным для вас способом и открываем <code>nginx.conf</code> в каталоге <code>/etc/nginx</code>. Внутри блока <code>http {}</code> создаем блок <code>server{}</code> и заполняем его следующим образом (все основные параметры совпадают с аналогичными из первого варианта):</p><pre><code>server {
         listen 443 ssl;
         server_name (адрес вашего сервера);
 
@@ -133,6 +137,7 @@ if __name__ == &#39;__main__&#39;:
             proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header   X-Forwarded-Host $server_name;
         }
-    }</code></pre></div><p>Обратите внимание на слэши после номера порта (7771/ и 7772/), их наличие очень важно. Далее сохраняем файл конфигурации и перезапускаем службу: <code>sudo service nginx reload</code>.
-Единственное, что надо изменить в самих ботах - это добавить <code>bot.remove_webhook()</code> и <code>bot.set_webhook(&quot;https://(адрес вашего сервера)/хххх)</code>, где xxxx в нашем случае либо AAAA, либо ZZZZ, при этом параметр <code>certificate</code> в методе <code>set_webhook</code> уже не нужен, т.к. сертификат не самоподписанный.</p><p><a href=/telegram-tutorial/docs/lesson_11/ class=book-btn style=float:left>← Урок №11</a>
-<a href=/telegram-tutorial/docs/lesson_13/ class=book-btn style=float:right>Урок №13 →</a></p></article></div><aside class="book-toc level-3 fixed"><nav id=TableOfContents><ul><li><ul><li><a href=#введение>Введение</a></li><li><a href=#вариант-первый-cherrypy-и-самоподписанные-сертификаты>Вариант первый: CherryPy и самоподписанные сертификаты</a><ul><li><a href=#подготавливаем-роутер>Подготавливаем «роутер»</a></li><li><a href=#подготавливаем-ботов>Подготавливаем ботов</a></li></ul></li><li><a href=#вариант-второй-nginx-и-let-s-encrypt>Вариант второй: nginx и Let&rsquo;s Encrypt</a><ul><li><a href=#получаем-сертификат-от-let-s-encrypt>Получаем сертификат от Let&rsquo;s Encrypt</a></li><li><a href=#настраиваем-nginx>Настраиваем nginx</a></li></ul></li></ul></li></ul></nav></aside></main></body></html>
+    }
+</code></pre><p>Обратите внимание на слэши после номера порта (7771/ и 7772/), их наличие очень важно. Далее сохраняем файл конфигурации и перезапускаем службу: <code>sudo service nginx reload</code>.
+Единственное, что надо изменить в самих ботах - это добавить <code>bot.remove_webhook()</code> и <code>bot.set_webhook("https://(адрес вашего сервера)/хххх)</code>, где xxxx в нашем случае либо AAAA, либо ZZZZ, при этом параметр <code>certificate</code> в методе <code>set_webhook</code> уже не нужен, т.к. сертификат не самоподписанный.</p><p><a href=/telegram-tutorial/docs/lesson_11/ class=book-btn style=float:left>← Урок №11</a>
+<a href=/telegram-tutorial/docs/lesson_13/ class=book-btn style=float:right>Урок №13 →</a></p></p></article><footer class=book-footer><div class="flex flex-wrap justify-between"></div></footer><label for=menu-control class="hidden book-menu-overlay"></label></div><aside class=book-toc><nav id=TableOfContents><ul><li><ul><li><a href=#введение>Введение</a></li><li><a href=#вариант-первый-cherrypy-и-самоподписанные-сертификаты>Вариант первый: CherryPy и самоподписанные сертификаты</a><ul><li><a href=#подготавливаем-роутер>Подготавливаем «роутер»</a></li><li><a href=#подготавливаем-ботов>Подготавливаем ботов</a></li></ul></li><li><a href=#вариант-второй-nginx-и-lets-encrypt>Вариант второй: nginx и Let&rsquo;s Encrypt</a><ul><li><a href=#получаем-сертификат-от-lets-encrypt>Получаем сертификат от Let&rsquo;s Encrypt</a></li><li><a href=#настраиваем-nginx>Настраиваем nginx</a></li></ul></li></ul></li></ul></nav></aside></main></body></html>

@@ -1,4 +1,4 @@
-{{ template "hrefhack" . }}
 {{ with .Site.GetPage .Site.Params.BookMenuBundle }}
-  {{- .Content -}}
+  {{- $href := printf "href=\"%s\"" $.RelPermalink -}}
+  {{- replace .Content $href (print $href "class=active") | safeHTML -}}
 {{ end }}
