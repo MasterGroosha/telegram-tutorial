@@ -50,7 +50,7 @@ mkdir mybot
 cd mybot
 python3.7 -m venv venv
 source venv/bin/activate
-pip install pytelegrambotapi aaaaaaaaaaaaaaaaaaa
+pip install pytelegrambotapi
 deactivate
 ```
 В результате должно получиться примерно то же самое, что на скриншоте ниже, с той лишь разницей, что я прервал процесс установки библиотеки для читабельности. Обратите внимание, что после подгрузки файла venv/bin/activate, перед названием пользователя и текущего каталога появится приписка (venv), означающая, что мы «вошли» в виртуальное окружение и устанавливаем библиотеки именно в него.
