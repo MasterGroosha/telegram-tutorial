@@ -2,15 +2,8 @@
 <strong></strong><label for=toc-control><img src=/telegram-tutorial/svg/toc.svg class=book-icon alt="Table of Contents"></label></div><input type=checkbox class=hidden id=toc-control><aside class="hidden clearfix"><nav><ul><li class=book-section-flat><strong>Categories</strong><ul></ul></li><li class=book-section-flat><strong>Tags</strong><ul></ul></li></ul></nav></aside></header><article class="markdown book-post"><h2><a href=/telegram-tutorial/posts/creating-a-new-theme/>Creating a New Theme</a></h2><h5>28 Sep. 2014</h5><p>Introduction This tutorial will show you how to create a simple theme in Hugo. I assume that you are familiar with HTML, the bash command line, and that you are comfortable using Markdown to format content. I&rsquo;ll explain how Hugo uses templates and how you can organize your templates to create a theme. I won&rsquo;t cover using CSS to style your theme.
 We&rsquo;ll start with creating a new site with a very basic template.
 <a href=/telegram-tutorial/posts/creating-a-new-theme/>...</a></p></article><article class="markdown book-post"><h2><a href=/telegram-tutorial/posts/migrate-from-jekyll/>Migrate to Hugo from Jekyll</a></h2><h5>10 Mar. 2014</h5><p>Move static content to static Jekyll has a rule that any directory not starting with _ will be copied as-is to the _site output. Hugo keeps all static content under static. You should therefore move it all there. With Jekyll, something that looked like
-▾ &lt;root>/
-▾ images/
-logo.png
-should become
-▾ &lt;root>/
-▾ static/
-▾ images/
-logo.png
-Additionally, you&rsquo;ll want any files that should reside at the root (such as CNAME) to be moved to static.
+▾ &lt;root>/ ▾ images/ logo.png should become
+▾ &lt;root>/ ▾ static/ ▾ images/ logo.png Additionally, you&rsquo;ll want any files that should reside at the root (such as CNAME) to be moved to static.
 <a href=/telegram-tutorial/posts/migrate-from-jekyll/>...</a></p></article><article class="markdown book-post"><h2><a href=/telegram-tutorial/posts/goisforlovers/>(Hu)go Template Primer</a></h2><h5>2 Apr. 2014</h5><p>Hugo uses the excellent Go html/template library for its template engine. It is an extremely lightweight engine that provides a very small amount of logic. In our experience that it is just the right amount of logic to be able to create a good static website. If you have used other template systems from different languages or frameworks you will find a lot of similarities in Go templates.
 This document is a brief primer on using Go templates.
 <a href=/telegram-tutorial/posts/goisforlovers/>...</a></p></article><article class="markdown book-post"><h2><a href=/telegram-tutorial/posts/hugoisforlovers/>Getting Started with Hugo</a></h2><h5>2 Apr. 2014</h5><p>Step 1. Install Hugo Go to Hugo releases and download the appropriate version for your OS and architecture.

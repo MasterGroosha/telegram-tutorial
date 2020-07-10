@@ -59,4 +59,4 @@ docs/_build/
 target/
 
 # Other
-book_src/hugo.exe
+book_src/hugo*
