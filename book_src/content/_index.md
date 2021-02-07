@@ -16,9 +16,12 @@ BookToC: false
 
 Новичкам рекомендуется – после ознакомления с языком Python, разумеется, – читать уроки по порядку, более продвинутые разработчики вольны использовать «учебник» в режиме справочника.
 
-Все исходные коды к урокам расположены в [этом репозитории](https://github.com/MasterGroosha/telegram-tutorial), а обсудить материал можно в [Telegram-чате](https://t.me/joinchat/ABtnIE7H7Q3TRRh8n8uNww) (лучше всего скинуть её себе в Telegram и кликнуть в приложении).
+Все исходные коды к урокам расположены в [этом репозитории](https://github.com/MasterGroosha/telegram-tutorial), а обсудить материал можно в [Telegram-чате](https://t.me/joinchat/TsftDfnevFLQS1ts).
 
 Поблагодарить автора (материально) можно [здесь](https://money.yandex.ru/to/41001515922197). Перевод является добровольным и безвозмездным. Вам несложно, а мне приятно :)
+
+ℹ️ также доступна [вторая версия книги](https://mastergroosha.github.io/telegram-tutorial-2/), 
+посвящённая преимущественно фреймворку aiogram.
 
 <center>
 {{< button relref="/docs/pytelegrambotapi/lesson_00" >}}Настроить рабочее окружение{{< /button >}} {{< button relref="/docs/pytelegrambotapi/lesson_01" >}}Перейти к первому уроку{{< /button >}}
