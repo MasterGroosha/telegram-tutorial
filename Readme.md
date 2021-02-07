@@ -1,7 +1,10 @@
 ### Уроки по написанию простого бота для Telegram
 
+ℹ️ также доступна [вторая версия книги](https://mastergroosha.github.io/telegram-tutorial-2/), 
+посвящённая преимущественно фреймворку aiogram.
+
 В данном репозитории хранятся исходные коды для уроков по написанию простого бота для Telegram.  
-Сами уроки можно прочесть [вот тут](https://mastergroosha.github.io/telegram-tutorial). А обсудить – в [Telegram-чатике](https://t.me/joinchat/ABtnIE7H7Q3TRRh8n8uNww)
+Сами уроки можно прочесть [вот тут](https://mastergroosha.github.io/telegram-tutorial). А обсудить – в [Telegram-чатике](https://t.me/joinchat/TsftDfnevFLQS1ts)
 
 [Урок 1. Введение, простой echo-бот](https://mastergroosha.github.io/telegram-tutorial/docs/lesson_01/)  
 [Урок 2. “Угадай мелодию”. Подготовка](https://mastergroosha.github.io/telegram-tutorial/docs/lesson_02/)  
@@ -16,7 +19,7 @@
 [Урок 11. Ведём (более-менее) осмысленные диалоги. Конечные автоматы](https://mastergroosha.github.io/telegram-tutorial/docs/lesson_11/)  
 [Урок 12. Запускаем несколько ботов на одном сервере](https://mastergroosha.github.io/telegram-tutorial/docs/lesson_12/)  
 [Урок 13. Опросы v2.0](https://mastergroosha.github.io/telegram-tutorial/docs/lesson_13/)  
-[Урок 14. Конечные автоматы в aiogram, разбиваем логику по файлам](https://mastergroosha.github.io/telegram-tutorial/docs/lesson_14/)
+[Урок 14. Конечные автоматы в aiogram, разбиваем логику по файлам](https://mastergroosha.github.io/telegram-tutorial-2/fsm/)
 
 
 Вдобавок к текстам программ, в репозитории с июня 2019 года располагаются исходники учебника, который хостится здесь же, на Github Pages, и собирается при помощи фреймворка [Hugo](https://gohugo.io)
