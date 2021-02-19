@@ -18,6 +18,7 @@ weight: 3
 ```python
 # -*- coding: utf-8 -*-
 import telebot
+import time
 
 bot = telebot.TeleBot(config.token)
 
