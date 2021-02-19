@@ -11,7 +11,7 @@
 [Урок 3. “Угадай мелодию”. Завершаем бота](https://mastergroosha.github.io/telegram-tutorial/docs/lesson_03/)  
 [Урок 4. Вебхуки](https://mastergroosha.github.io/telegram-tutorial/docs/lesson_04/)  
 [Урок 5. Автопостинг в каналы](https://mastergroosha.github.io/telegram-tutorial/docs/lesson_05/)  
-[Урок 6. Собираем аналитику при помощи Botan](https://mastergroosha.github.io/telegram-tutorial/docs/lesson_06/)  
+Урок 6. Собираем аналитику при помощи Botan (устарел)  
 [Урок 7. Встраиваемые боты (Inline)](https://mastergroosha.github.io/telegram-tutorial/docs/lesson_07/)  
 [Урок 8. Bot API v2: Кнопки и редактирование сообщений](https://mastergroosha.github.io/telegram-tutorial/docs/lesson_08/)  
 [Урок 9. Bot API v2: Специальные кнопки, опять редактирование сообщений, кэшированный инлайн](https://mastergroosha.github.io/telegram-tutorial/docs/lesson_09/)  
