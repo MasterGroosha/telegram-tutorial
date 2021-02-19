@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Modified for pyTelegramBotAPI (https://github.com/eternnoir/pyTelegramBotAPI/)
 
 import requests

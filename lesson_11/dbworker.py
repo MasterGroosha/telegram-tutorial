@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from vedis import Vedis
 import config
 

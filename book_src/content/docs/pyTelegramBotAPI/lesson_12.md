@@ -37,9 +37,6 @@ weight: 13
 Давайте для начала создадим наш "роутер", то есть, сервер CherryPy, который будет принимать все сообщения и раскидывать их по нужным ботам. Условимся также, что наш сервер будет иметь IP 122.122.122.122 и вебхуки от первого бота будут приходить на адрес https://122.122.122.122/AAAA, а от второго на https://122.122.122.122/ZZZZ. Предполагается, что вы уже прочитали [урок №4]({{< relref "/docs/pytelegrambotapi/lesson_04" >}}) и структура вебхук-ботов вас не пугает.
 
 ```python
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import cherrypy
 import requests
 import telebot
@@ -120,9 +117,6 @@ if __name__ == '__main__':
 Первый бот:
 
 ```python
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import cherrypy
 import telebot
 

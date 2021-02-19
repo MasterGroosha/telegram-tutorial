@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from enum import Enum
 
 token = "12345567:ABCxyz"

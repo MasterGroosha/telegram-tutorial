@@ -1,6 +1,3 @@
-#!/usr/bin/python3.4
-# -*- coding: utf-8 -*-
-
 import telebot
 from lesson_02_03 import config
 import os

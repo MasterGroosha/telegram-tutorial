@@ -9,10 +9,7 @@
 ботов при помощи одних лишь серверов <a href=http://www.cherrypy.org>CherryPy</a> и самоподписанных сертификатов, во второй же
 вместо основного веб-сервера поставим <a href=http://nginx.org/ru>nginx</a>, а вместо самоподписанных сертификатов –
 бесплатные от <a href=https://letsencrypt.org>Let&rsquo;s Encrypt</a>.</p><h2 id=вариант-первый-cherrypy-и-самоподписанные-сертификаты>Вариант первый: CherryPy и самоподписанные сертификаты</h2><p>Общая схема взаимодействия Telegram и наших ботов в первом варианте будет выглядеть следующим образом:</p><center><img src=https://mastergroosha.github.io/telegram-tutorial//images/l12_1.jpg></center>
-<center><i>Общая схема взаимодействия</i></center><h3 id=подготавливаем-роутер>Подготавливаем «роутер»</h3><p>Давайте для начала создадим наш &ldquo;роутер&rdquo;, то есть, сервер CherryPy, который будет принимать все сообщения и раскидывать их по нужным ботам. Условимся также, что наш сервер будет иметь IP 122.122.122.122 и вебхуки от первого бота будут приходить на адрес https://122.122.122.122/AAAA, а от второго на https://122.122.122.122/ZZZZ. Предполагается, что вы уже прочитали <a href=/telegram-tutorial/docs/lesson_04/>урок №4</a> и структура вебхук-ботов вас не пугает.</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:green>#!/usr/bin/env python3</span>
-<span style=color:green># -*- coding: utf-8 -*-</span>
-
-<span style=color:#00f>import</span> cherrypy
+<center><i>Общая схема взаимодействия</i></center><h3 id=подготавливаем-роутер>Подготавливаем «роутер»</h3><p>Давайте для начала создадим наш &ldquo;роутер&rdquo;, то есть, сервер CherryPy, который будет принимать все сообщения и раскидывать их по нужным ботам. Условимся также, что наш сервер будет иметь IP 122.122.122.122 и вебхуки от первого бота будут приходить на адрес https://122.122.122.122/AAAA, а от второго на https://122.122.122.122/ZZZZ. Предполагается, что вы уже прочитали <a href=/telegram-tutorial/docs/lesson_04/>урок №4</a> и структура вебхук-ботов вас не пугает.</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#00f>import</span> cherrypy
 <span style=color:#00f>import</span> requests
 <span style=color:#00f>import</span> telebot
 
@@ -84,10 +81,7 @@ bot_2 = telebot.TeleBot(BOT_2_TOKEN)
         <span style=color:#a31515>&#39;engine.autoreload.on&#39;</span>: False
     })
     cherrypy.quickstart(WebhookServer(), <span style=color:#a31515>&#39;/&#39;</span>, {<span style=color:#a31515>&#39;/&#39;</span>: {}})
-</code></pre></div><h3 id=подготавливаем-ботов>Подготавливаем ботов</h3><p>Создадим их две штуки, каждый из которых будет на команду <strong>/start</strong> представляться по своему номеру.<br>Первый бот:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:green>#!/usr/bin/env python3</span>
-<span style=color:green># -*- coding: utf-8 -*-</span>
-
-<span style=color:#00f>import</span> cherrypy
+</code></pre></div><h3 id=подготавливаем-ботов>Подготавливаем ботов</h3><p>Создадим их две штуки, каждый из которых будет на команду <strong>/start</strong> представляться по своему номеру.<br>Первый бот:</p><div class=highlight><pre style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#00f>import</span> cherrypy
 <span style=color:#00f>import</span> telebot
 
 BOT_TOKEN = <span style=color:#a31515>&#34;токен нашего бота&#34;</span>

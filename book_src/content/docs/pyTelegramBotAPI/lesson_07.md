@@ -33,8 +33,6 @@ weight: 8
 Создадим файл исходного кода и добавим туда необходимые импорты и объект самого бота:
 
 ```python
-# -*- coding: utf-8 -*-
-
 import telebot
 import re
 from telebot import types
