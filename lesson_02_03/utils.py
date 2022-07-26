@@ -1,9 +1,8 @@
 import shelve
-from telebot import types
+from SQLighter import SQLighter
+from config import shelve_name, database_name
 from random import shuffle
-from lesson_02_03.SQLighter import SQLighter
-from lesson_02_03.config import database_name, shelve_name
-
+from telebot import types
 
 def count_rows():
     """
@@ -26,26 +25,26 @@ def get_rows_count():
     return rowsnum
 
 
-def set_user_game(chat_id, estimated_answer):
+def set_user_game(user_id, estimated_answer):
     """
     Записываем юзера в игроки и запоминаем, что он должен ответить.
     :param chat_id: id юзера
     :param estimated_answer: правильный ответ (из БД)
     """
     with shelve.open(shelve_name) as storage:
-        storage[str(chat_id)] = estimated_answer
+        storage[str(user_id)] = estimated_answer
 
 
-def finish_user_game(chat_id):
+def finish_user_game(user_id):
     """
     Заканчиваем игру текущего пользователя и удаляем правильный ответ из хранилища
     :param chat_id: id юзера
     """
     with shelve.open(shelve_name) as storage:
-        del storage[str(chat_id)]
+        del storage[str(user_id)]
 
 
-def get_answer_for_user(chat_id):
+def get_answer_for_user(user_id):
     """
     Получаем правильный ответ для текущего юзера.
     В случае, если человек просто ввёл какие-то символы, не начав игру, возвращаем None
@@ -54,12 +53,11 @@ def get_answer_for_user(chat_id):
     """
     with shelve.open(shelve_name) as storage:
         try:
-            answer = storage[str(chat_id)]
+            answer = storage[str(user_id)]
             return answer
         # Если человек не играет, ничего не возвращаем
         except KeyError:
             return None
-
 
 def generate_markup(right_answer, wrong_answers):
     """
@@ -68,7 +66,7 @@ def generate_markup(right_answer, wrong_answers):
     :param wrong_answers: Набор неправильных ответов
     :return: Объект кастомной клавиатуры
     """
-    markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
+    markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True, selective=True)
     # Склеиваем правильный ответ с неправильными
     all_answers = '{},{}'.format(right_answer, wrong_answers)
     # Создаем лист (массив) и записываем в него все элементы
